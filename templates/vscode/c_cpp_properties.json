@@ -1,0 +1,107 @@
+{
+    "env": {
+        "WWISE": "${env:HOME}/.anki/wwise/versions/2017.2.7_a",
+        "VICOS_SDK": "${env:HOME}/.anki/vicos-sdk/dist/1.1.0-r04"
+    },
+    "configurations": [
+        {
+            "name": "Mac",
+            "includePath": [
+                "${workspaceFolder}",
+                "${workspaceFolder}/animProcess/src",
+                "${workspaceFolder}/engine",
+                "${workspaceFolder}/platform",
+                "${workspaceFolder}/robot/include",
+                "${workspaceFolder}/generated",
+                "${workspaceFolder}/generated/clad/engine",
+                "${workspaceFolder}/generated/clad/robot",
+                "${workspaceFolder}/generated/clad/util",
+                "${workspaceFolder}/generated/coretech/common",
+                "${workspaceFolder}/generated/coretech/vision",
+                "${workspaceFolder}/lib/audio/include",
+                "${workspaceFolder}/lib/micData",
+                "${workspaceFolder}/lib/util/source/anki",
+                "${workspaceFolder}/lib/util/source/3rd",
+                "${workspaceFolder}/lib/util/source/3rd/jsoncpp",
+                "${workspaceFolder}/victor-clad/tools/message-buffers/support/cpp/include",
+                "${workspaceFolder}/3rd/opencv/mac",
+                "${workspaceFolder}/3rd/opencv/modules/core/include",
+                "${workspaceFolder}/3rd/opencv/modules/imgproc/include",
+                "${workspaceFolder}/3rd/opencv/modules/highgui/include",
+                "${workspaceFolder}/3rd/opencv/modules/imgcodecs/include",
+                "${workspaceFolder}/3rd/opencv/modules/videoio/include",
+                "${WWISE}/include"
+            ],
+            "macFrameworkPath": [
+                "${workspaceFolder}/lib/util/libs/framework"
+            ],
+            "defines": [
+                "MACOSX",
+                "SIMULATOR",
+                "FACTORY_TEST=0"
+            ],
+            "intelliSenseMode": "clang-x64",
+            "browse": {
+                "path": [
+                    "${workspaceFolder}",
+                    "/Applications/Webots.app/include/controller/cpp"
+                ],
+                "limitSymbolsToIncludedHeaders": true
+            },
+            "compilerPath": "/usr/bin/clang",
+            "cStandard": "c11",
+            "cppStandard": "c++14"
+        },
+        {
+            "name": "VicOS",
+            "includePath": [
+                "${workspaceFolder}",
+                "${workspaceFolder}/animProcess/src",
+                "${workspaceFolder}/engine",
+                "${workspaceFolder}/platform",
+                "${workspaceFolder}/robot/include",
+                "${workspaceFolder}/generated",
+                "${workspaceFolder}/generated/clad/engine",
+                "${workspaceFolder}/generated/clad/robot",
+                "${workspaceFolder}/generated/clad/util",
+                "${workspaceFolder}/generated/coretech/common",
+                "${workspaceFolder}/generated/coretech/vision",
+                "${workspaceFolder}/lib/audio/include",
+                "${workspaceFolder}/lib/micData",
+                "${workspaceFolder}/lib/util/source/anki",
+                "${workspaceFolder}/lib/util/source/3rd",
+                "${workspaceFolder}/lib/util/source/3rd/jsoncpp",
+                "${workspaceFolder}/victor-clad/tools/message-buffers/support/cpp/include",
+                "${workspaceFolder}/3rd/opencv/vicos/include",
+                "${workspaceFolder}/3rd/opencv/modules/core/include",
+                "${workspaceFolder}/3rd/opencv/modules/imgproc/include",
+                "${workspaceFolder}/3rd/opencv/modules/highgui/include",
+                "${workspaceFolder}/3rd/opencv/modules/imgcodecs/include",
+                "${workspaceFolder}/3rd/opencv/modules/videoio/include",
+                "${WWISE}/include",
+                "${VICOS_SDK}/prebuilt/include",
+                "${VICOS_SDK}/prebuilt/include/clang/AST",
+                "${VICOS_SDK}/sysroot/usr/include",
+                "${VICOS_SDK}/sysroot/usr/include/c++/v1"
+            ],
+            "defines": [
+                "VICOS",
+                "ANKI_PLATFORM_VICOS=1",
+                "FACTORY_TEST=0"
+            ],
+            "intelliSenseMode": "clang-x64",
+            "browse": {
+                "path": [
+                    "${workspaceFolder}",
+                    "${VICOS_SDK}/prebuilt/include",
+                    "${VICOS_SDK}/sysroot/usr/include"
+                ],
+                "limitSymbolsToIncludedHeaders": true
+            },
+            "compilerPath": "/usr/bin/clang",
+            "cStandard": "c11",
+            "cppStandard": "c++14"
+        }
+    ],
+    "version": 4
+}
