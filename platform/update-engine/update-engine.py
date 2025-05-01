@@ -809,6 +809,8 @@ def construct_update_url(os_version, cmdline):
 if __name__ == '__main__':
     das_event("robot.ota_download_start")
     clear_status()
+    if not os.path.isdir(STATUS_DIR):
+        os.mkdir(STATUS_DIR)
     DEBUG = os.getenv("UPDATE_ENGINE_DEBUG", "False") in TRUE_SYNONYMS
     url = os.getenv("UPDATE_ENGINE_URL", "auto")
     # We don't expect command line args, but handle them to facilitate developer testing
