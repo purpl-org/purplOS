@@ -519,10 +519,11 @@ def svn_package(svn_dict):
         additional_files = repos[repo].get("additional_files", [])
         extract_types = repos[repo].get("extract_types_from_tar", [])
 
+	# WIRE: UNCOMMENT THIS TO NOT BUILD ANIMATIONS
         #Move on if the directory already exists
-        if os.path.isdir(loc):
-            print(export_dirname + " already exists!")
-            continue
+        #if os.path.isdir(loc):
+        #    print(export_dirname + " already exists!")
+        #    continue
 
         # Download from the local HTTP server
         #print("Downloading " + export_dirname + "...")
