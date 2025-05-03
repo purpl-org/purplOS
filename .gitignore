@@ -2,6 +2,7 @@
 *~
 *.d
 *.cache
+build/cache
 *.swp
 matlab.mat
 
