@@ -3,6 +3,7 @@
 *.d
 *.cache
 build/cache
+anki-deps
 *.swp
 matlab.mat
 
