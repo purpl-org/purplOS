@@ -4,18 +4,6 @@ Welcome to `victor`. This is the home of the Anki Vector robot's source code. Or
 
 Check the [wiki](https://github.com/kercre123/victor/wiki) for more information about the leak, what we can do with this, and general Vector info.
 
-> [!WARNING]
-> **You CANNOT currently deploy this to a regular, non-unlocked bot.**
-
-## Branch Notes
-
-- `kirkstone`
-	-	Modified to compile with a new compiler (Clang 18)
-	-	Designed to work with https://github.com/kercre123/vic-yocto-2
-		-	A project intended to upgrade Vector's underlying OS
-	-	Updated update-engine which should work with Python 3.12
-	-	Actually meant to work with scarthgap but I don't feel like changing the branch name
-
 ## Changes
 
 - The wiki includes a list of changes I made: [Changes I Made](https://github.com/kercre123/victor/wiki/Changes-I-Made)
@@ -28,10 +16,8 @@ Check the [wiki](https://github.com/kercre123/victor/wiki) for more information 
 
 ```
 cd ~
-git clone --recurse-submodules https://github.com/kercre123/victor -b snowboy
-cd victor
-git lfs install
-git lfs pull
+git clone --recurse-submodules https://github.com/os-vector/wire-os-victor
+cd wire-os-victor
 ```
 
 2. Make sure you can run Docker as a normal user. This will probably involve:
@@ -46,13 +32,15 @@ sudo chmod 660 /var/run/docker.sock
 
 3. Run the build script:
 ```
-cd ~/victor
-./wire/build-d.sh
+cd ~/wire-os-victor
+./build/build-v.sh
 ```
 
 3. It should just work! The output will be in `./_build/vicos/Release/`
 
 ## Building (Intel or ARM64 macOS)
+
+# ***NOT FUNCTIONAL YET***
 
  - Prereqs: Make sure you have [brew](https://brew.sh/) installed.
    -  Then: `brew install pyenv git-lfs ccache wget`
