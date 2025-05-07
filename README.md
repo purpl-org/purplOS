@@ -38,9 +38,9 @@ cd ~/wire-os-victor
 
 3. It should just work! The output will be in `./_build/vicos/Release/`
 
-## Building (Intel or ARM64 macOS)
+## Building (ARM64 macOS)
 
-# ***NOT FUNCTIONAL YET***
+# only works on M1-M4 Macs at the moment, not Intel
 
  - Prereqs: Make sure you have [brew](https://brew.sh/) installed.
    -  Then: `brew install pyenv git-lfs ccache wget`
@@ -81,8 +81,8 @@ sudo spctl --global-disable
 
 4. Run the build script:
 ```
-cd ~/victor
-./wire/build.sh
+cd ~/wire-os-victor
+./build/build-v.sh
 ```
 
 5. It should just work! The output will be in `./_build/vicos/Release/`
@@ -100,9 +100,5 @@ echo 192.168.1.150 > robot_ip.txt
 3. Run:
 
 ```
-# Linux
-./wire/deploy-d.sh
-
-# macOS
-./wire/deploy.sh
+./build/deploy-d.sh
 ```
