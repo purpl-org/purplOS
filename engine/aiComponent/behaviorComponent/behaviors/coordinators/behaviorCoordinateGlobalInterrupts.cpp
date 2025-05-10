@@ -104,7 +104,15 @@ namespace{
     USER_INTENT(movement_turnaround),
   }};
 
-  static const std::set<BehaviorID> kBehaviorIDsToSuppressWhenInAPerformance = {
+  static const std::set<BehaviorID> kBehaviorIDsToSuppressWhenInAnIntentionalPerformance = {
+    BEHAVIOR_ID(DanceToTheBeatCoordinator),
+    BEHAVIOR_ID(ListenForBeats),
+    BEHAVIOR_ID(DanceToTheBeat),
+    BEHAVIOR_ID(ReactToObstacle),
+    BEHAVIOR_ID(ReactToSoundAwake),
+  };
+
+  static const std::set<BehaviorID> kBehaviorIDsToSuppressWhenInAnUntintentionalPerformance = {
     BEHAVIOR_ID(DanceToTheBeatCoordinator),
     BEHAVIOR_ID(ListenForBeats),
     BEHAVIOR_ID(DanceToTheBeat),
@@ -162,8 +170,12 @@ void BehaviorCoordinateGlobalInterrupts::InitPassThrough()
     _iConfig.toSuppressWhenGoingHome.push_back( BC.FindBehaviorByID(id) );
   }
 
-  for( const auto& id : kBehaviorIDsToSuppressWhenInAPerformance ) {
-    _iConfig.toSuppressWhenInAPerformance.push_back( BC.FindBehaviorByID(id) );
+  for( const auto& id : kBehaviorIDsToSuppressWhenInAnUntintentionalPerformance ) {
+    _iConfig.toSuppressWhenInAnUnintentionalPerformance.push_back( BC.FindBehaviorByID(id) );
+  }
+
+  for( const auto& id : kBehaviorIDsToSuppressWhenInAnIntentionalPerformance ) {
+    _iConfig.toSuppressWhenInAnIntentionalPerformance.push_back( BC.FindBehaviorByID(id) );
   }
 
   BC.FindBehaviorByIDAndDowncast(BEHAVIOR_ID(TimerUtilityCoordinator),
@@ -179,7 +191,8 @@ void BehaviorCoordinateGlobalInterrupts::InitPassThrough()
   _iConfig.reactToObstacleBehavior = BC.FindBehaviorByID(BEHAVIOR_ID(ReactToObstacle));
   _iConfig.meetVictorBehavior = BC.FindBehaviorByID(BEHAVIOR_ID(MeetVictor));
   _iConfig.danceToTheBeatBehavior = BC.FindBehaviorByID(BEHAVIOR_ID(DanceToTheBeat));
-  _iConfig.performanceBehavior = BC.FindBehaviorByID(BEHAVIOR_ID(PossiblePerformance));
+  _iConfig.intentionalPerformanceBehavior = BC.FindBehaviorByID(BEHAVIOR_ID(PossibleIntentionalPerformance));
+  _iConfig.unintentionalPerformanceBehavior = BC.FindBehaviorByID(BEHAVIOR_ID(PossibleUnintentionalPerformance));
 
   _iConfig.behaviorsThatShouldntReactToUnexpectedMovement.AddBehavior(BC, BEHAVIOR_CLASS(BumpObject));
   _iConfig.behaviorsThatShouldntReactToUnexpectedMovement.AddBehavior(BC, BEHAVIOR_CLASS(ClearChargerArea));
@@ -252,9 +265,15 @@ void BehaviorCoordinateGlobalInterrupts::PassThroughUpdate()
     }
   }
 
-  // Stop behaviors from interrupting intentional and unintentional performances
-  if( _iConfig.performanceBehavior->IsActivated() ) {
-    for( const auto& beh : _iConfig.toSuppressWhenInAPerformance ) {
+  // Stop behaviors from interrupting intentional performances
+  if( _iConfig.intentionalPerformanceBehavior->IsActivated() ) {
+    for( const auto& beh : _iConfig.toSuppressWhenInAnIntentionalPerformance ) {
+      beh->SetDontActivateThisTick(GetDebugLabel());
+    }
+  }
+
+  if( _iConfig.unintentionalPerformanceBehavior->IsActivated() ) {
+    for( const auto& beh : _iConfig.toSuppressWhenInAnUnintentionalPerformance ) {
       beh->SetDontActivateThisTick(GetDebugLabel());
     }
   }
