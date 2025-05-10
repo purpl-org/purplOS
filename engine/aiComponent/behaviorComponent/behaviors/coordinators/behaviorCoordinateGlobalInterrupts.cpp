@@ -103,6 +103,14 @@ namespace{
     USER_INTENT(movement_turnright),
     USER_INTENT(movement_turnaround),
   }};
+
+  static const std::set<BehaviorID> kBehaviorIDsToSuppressWhenInAPerformance = {
+    BEHAVIOR_ID(DanceToTheBeatCoordinator),
+    BEHAVIOR_ID(ListenForBeats),
+    BEHAVIOR_ID(DanceToTheBeat),
+    BEHAVIOR_ID(ReactToObstacle),
+    BEHAVIOR_ID(ReactToSoundAwake),
+  };
 }
 
 
@@ -154,6 +162,10 @@ void BehaviorCoordinateGlobalInterrupts::InitPassThrough()
     _iConfig.toSuppressWhenGoingHome.push_back( BC.FindBehaviorByID(id) );
   }
 
+  for( const auto& id : kBehaviorIDsToSuppressWhenInAPerformance ) {
+    _iConfig.toSuppressWhenInAPerformance.push_back( BC.FindBehaviorByID(id) );
+  }
+
   BC.FindBehaviorByIDAndDowncast(BEHAVIOR_ID(TimerUtilityCoordinator),
                                  BEHAVIOR_CLASS(TimerUtilityCoordinator),
                                  _iConfig.timerCoordBehavior);
@@ -167,6 +179,7 @@ void BehaviorCoordinateGlobalInterrupts::InitPassThrough()
   _iConfig.reactToObstacleBehavior = BC.FindBehaviorByID(BEHAVIOR_ID(ReactToObstacle));
   _iConfig.meetVictorBehavior = BC.FindBehaviorByID(BEHAVIOR_ID(MeetVictor));
   _iConfig.danceToTheBeatBehavior = BC.FindBehaviorByID(BEHAVIOR_ID(DanceToTheBeat));
+  _iConfig.performanceBehavior = BC.FindBehaviorByID(BEHAVIOR_ID(PossiblePerformance));
 
   _iConfig.behaviorsThatShouldntReactToUnexpectedMovement.AddBehavior(BC, BEHAVIOR_CLASS(BumpObject));
   _iConfig.behaviorsThatShouldntReactToUnexpectedMovement.AddBehavior(BC, BEHAVIOR_CLASS(ClearChargerArea));
@@ -235,6 +248,13 @@ void BehaviorCoordinateGlobalInterrupts::PassThroughUpdate()
   // Suppress behaviors if dancing to the beat
   if( _iConfig.danceToTheBeatBehavior->IsActivated() ) {
     for( const auto& beh : _iConfig.toSuppressWhenDancingToTheBeat ) {
+      beh->SetDontActivateThisTick(GetDebugLabel());
+    }
+  }
+
+  // Stop behaviors from interrupting intentional and unintentional performances
+  if( _iConfig.performanceBehavior->IsActivated() ) {
+    for( const auto& beh : _iConfig.toSuppressWhenInAPerformance ) {
       beh->SetDontActivateThisTick(GetDebugLabel());
     }
   }
