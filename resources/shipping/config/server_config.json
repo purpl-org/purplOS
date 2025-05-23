@@ -1,8 +1,8 @@
 {
-	"jdocs": "vicapi.pvic.xyz:8081",
-	"tms": "vicapi.pvic.xyz:8081",
-	"chipper": "vicapi.pvic.xyz:8081",
-	"check": "vicapi.pvic.xyz/ok",
+	"jdocs": "voice-purpl.api.froggitti.net:8082",
+	"tms": "voice-purpl.api.froggitti.net:8082",
+	"chipper": "voice-purpl.api.froggitti.net:8082",
+	"check": "api.vicw.xyz:7070/ok",
 	"logfiles": "s3://anki-device-logs-prod/victor",
 	"appkey": "oDoa0quieSeir6goowai7f"
 }
