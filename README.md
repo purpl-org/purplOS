@@ -4,10 +4,6 @@ Welcome to `purplOS`.
 
 Check the [wiki](https://github.com/kercre123/victor/wiki) for more information about the leak, what we can do with this, and general Vector info.
 
-## Changes
-
-- The wiki includes a list of changes I made: [Changes I Made](https://github.com/kercre123/victor/wiki/Changes-I-Made)
-
 ## Building (Linux)
 
  - Prereqs: Make sure you have `docker` and `git-lfs` installed.
