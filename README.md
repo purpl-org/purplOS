@@ -1,6 +1,6 @@
-# victor
+# purplOS
 
-Welcome to `victor`. This is the home of the Anki Vector robot's source code. Original README: [README-orig.md](/README-orig.md)
+Welcome to `purplOS`.
 
 Check the [wiki](https://github.com/kercre123/victor/wiki) for more information about the leak, what we can do with this, and general Vector info.
 
@@ -16,8 +16,8 @@ Check the [wiki](https://github.com/kercre123/victor/wiki) for more information 
 
 ```
 cd ~
-git clone --recurse-submodules https://github.com/os-vector/wire-os-victor
-cd wire-os-victor
+git clone --recurse-submodules https://github.com/purpl-org/purplOS
+cd purplOS
 ```
 
 2. Make sure you can run Docker as a normal user. This will probably involve:
@@ -32,7 +32,7 @@ sudo chmod 660 /var/run/docker.sock
 
 3. Run the build script:
 ```
-cd ~/wire-os-victor
+cd ~/purplOS
 ./build/build-v.sh
 ```
 
@@ -49,10 +49,8 @@ cd ~/wire-os-victor
 
 ```
 cd ~
-git clone --recurse-submodules https://github.com/kercre123/victor -b snowboy
-cd victor
-git lfs install
-git lfs pull
+git clone --recurse-submodules https://github.com/purpl-org/purplOS 
+cd purplOS
 ```
 
 2. Set up Python 2:
@@ -81,7 +79,7 @@ sudo spctl --global-disable
 
 4. Run the build script:
 ```
-cd ~/wire-os-victor
+cd ~/purplOS
 ./build/build-v.sh
 ```
 
@@ -89,7 +87,7 @@ cd ~/wire-os-victor
 
 ## Deploying
 
-1. Echo your robot's IP address to robot_ip.txt (in the root of the victor repo):
+1. Echo your robot's IP address to robot_ip.txt (in the root of the purplOS repo):
 
 ```
 echo 192.168.1.150 > robot_ip.txt
