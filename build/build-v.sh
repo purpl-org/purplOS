@@ -20,12 +20,12 @@ fi
 
 echo $HOST
 
-if [[ ! -d "$ADEPS/vicos-sdk/dist/4.0.0-r05/prebuilt" ]]; then
-	mkdir -p "$ADEPS/vicos-sdk/dist/4.0.0-r05"
-	cd "$ADEPS/vicos-sdk/dist/4.0.0-r05"
-	wget -q --show-progress https://github.com/os-vector/wire-os-externals/releases/download/4.0.0-r05/vicos-sdk_4.0.0-r05_$HOST.tar.gz
-	tar -zxf vicos-sdk_4.0.0-r05_$HOST.tar.gz
-	rm -f vicos-sdk_4.0.0-r05_$HOST.tar.gz
+if [[ ! -d "$ADEPS/vicos-sdk/dist/5.2.1-r06/prebuilt" ]]; then
+	mkdir -p "$ADEPS/vicos-sdk/dist/5.2.1-r06"
+	cd "$ADEPS/vicos-sdk/dist/5.2.1-r06"
+	wget -q --show-progress https://github.com/os-vector/wire-os-externals/releases/download/5.2.1-r06/vicos-sdk_5.2.1-r06_$HOST.tar.gz
+	tar -zxf vicos-sdk_5.2.1-r06_$HOST.tar.gz
+	rm -f vicos-sdk_5.2.1-r06_$HOST.tar.gz
 fi
 
 cd "$DIR"
