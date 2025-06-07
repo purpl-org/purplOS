@@ -1,5 +1,7 @@
 #!/bin/bash
 
+TOOLCHAIN_VERSION="5.2.1-r06"
+
 set -e
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/.."
@@ -20,12 +22,12 @@ fi
 
 echo $HOST
 
-if [[ ! -d "$ADEPS/vicos-sdk/dist/5.2.1-r06/prebuilt" ]]; then
-	mkdir -p "$ADEPS/vicos-sdk/dist/5.2.1-r06"
-	cd "$ADEPS/vicos-sdk/dist/5.2.1-r06"
-	wget -q --show-progress https://github.com/os-vector/wire-os-externals/releases/download/5.2.1-r06/vicos-sdk_5.2.1-r06_$HOST.tar.gz
-	tar -zxf vicos-sdk_5.2.1-r06_$HOST.tar.gz
-	rm -f vicos-sdk_5.2.1-r06_$HOST.tar.gz
+if [[ ! -d "$ADEPS/vicos-sdk/dist/${TOOLCHAIN_VERSION}/prebuilt" ]]; then
+	mkdir -p "$ADEPS/vicos-sdk/dist/${TOOLCHAIN_VERSION}"
+	cd "$ADEPS/vicos-sdk/dist/${TOOLCHAIN_VERSION}"
+	wget -q --show-progress https://github.com/os-vector/wire-os-externals/releases/download/${TOOLCHAIN_VERSION}/vicos-sdk_${TOOLCHAIN_VERSION}_$HOST.tar.gz
+	tar -zxf vicos-sdk_${TOOLCHAIN_VERSION}_$HOST.tar.gz
+	rm -f vicos-sdk_${TOOLCHAIN_VERSION}_$HOST.tar.gz
 fi
 
 cd "$DIR"
