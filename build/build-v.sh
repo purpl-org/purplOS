@@ -14,6 +14,12 @@ if [[ "$(uname -a)" == *"x86_64"* && "$(uname -a)" == *"Linux"* ]]; then
 elif [[ "$(uname -a)" == *"arm64"* && "$(uname -a)" == *"Darwin"* ]]; then
 	HOST="arm64-macos"
 	ADEPS="$HOME/.anki"
+#elif [[ "$(uname -a)" == *"x86_64"* && "$(uname -a)" == *"Darwin"* ]]; then
+#        HOST="amd64-macos"
+#        ADEPS="$HOME/.anki"
+#elif [[ "$(uname -a)" == *"arm64"* && "$(uname -a)" == *"Linux"* ]]; then
+#        HOST="arm64-linux"
+#        ADEPS="anki-deps"
 else
     echo "This can only be run on x86_64 Linux or amd64 macOS systems at the moment."
     echo "This will be fixed once I compile the new toolchain for more platforms."
@@ -21,6 +27,10 @@ else
 fi
 
 echo $HOST
+
+# remove old toolchain
+echo "Deleting old 4.0.0-r05 toolchain if it exists..."
+rm -rf $ADEPS/vicos-sdk/dist/4.0.0-r05
 
 if [[ ! -d "$ADEPS/vicos-sdk/dist/${TOOLCHAIN_VERSION}/prebuilt" ]]; then
 	mkdir -p "$ADEPS/vicos-sdk/dist/${TOOLCHAIN_VERSION}"
