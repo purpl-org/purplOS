@@ -17,9 +17,9 @@ elif [[ "$(uname -a)" == *"arm64"* && "$(uname -a)" == *"Darwin"* ]]; then
 #elif [[ "$(uname -a)" == *"x86_64"* && "$(uname -a)" == *"Darwin"* ]]; then
 #        HOST="amd64-macos"
 #        ADEPS="$HOME/.anki"
-#elif [[ "$(uname -a)" == *"arm64"* && "$(uname -a)" == *"Linux"* ]]; then
-#        HOST="arm64-linux"
-#        ADEPS="anki-deps"
+elif [[ "$(uname -a)" == *"aarch64"* && "$(uname -a)" == *"Linux"* ]]; then
+        HOST="arm64-linux"
+        ADEPS="anki-deps"
 else
     echo "This can only be run on x86_64 Linux or amd64 macOS systems at the moment."
     echo "This will be fixed once I compile the new toolchain for more platforms."
@@ -78,7 +78,7 @@ else
 	else
 		echo "Reusing vic-standalone-builder-3"
 	fi
-	docker run -it \
+	docker run --rm -it \
 		-v $(pwd)/anki-deps:/home/$USER/.anki \
 		-v $(pwd):$(pwd) \
 		-v $(pwd)/build/cache:/home/$USER/.ccache \
