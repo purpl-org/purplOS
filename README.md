@@ -8,7 +8,7 @@ Check the [wiki](https://github.com/kercre123/victor/wiki) for more information 
 
 - The wiki includes a list of changes I made: [Changes I Made](https://github.com/kercre123/victor/wiki/Changes-I-Made)
 
-## Building (Linux)
+## Building (x86_64/arm64 Linux)
 
  - Prereqs: Make sure you have `docker` and `git-lfs` installed.
 
