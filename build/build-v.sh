@@ -21,7 +21,7 @@ elif [[ "$(uname -a)" == *"aarch64"* && "$(uname -a)" == *"Linux"* ]]; then
         HOST="arm64-linux"
         ADEPS="anki-deps"
 else
-    echo "This can only be run on x86_64 Linux or amd64 macOS systems at the moment."
+    echo "This can only be run on x86_64 Linux, arm64 macOS, or arm64 macOS systems at the moment."
     echo "This will be fixed once I compile the new toolchain for more platforms."
     exit 1
 fi
@@ -67,22 +67,22 @@ else
 		echo -e "\033[32mContinuing in 5 seconds... (you will only see this message once)\033[0m"
 		sleep 5
 	fi
-	if [[ -z $(docker images -q vic-standalone-builder-4) ]]; then
+	if [[ -z $(docker images -q vic-standalone-builder-5) ]]; then
 		docker build \
 		--build-arg DIR_PATH="$(pwd)" \
 		--build-arg USER_NAME=$USER \
 		--build-arg UID=$(id -u $USER) \
 		--build-arg GID=$(id -u $USER) \
-		-t vic-standalone-builder-4 \
+		-t vic-standalone-builder-5 \
 		build/
 	else
-		echo "Reusing vic-standalone-builder-3"
+		echo "Reusing vic-standalone-builder-5"
 	fi
 	docker run --rm -it \
 		-v $(pwd)/anki-deps:/home/$USER/.anki \
 		-v $(pwd):$(pwd) \
 		-v $(pwd)/build/cache:/home/$USER/.ccache \
-		vic-standalone-builder-4 bash -c \
+		vic-standalone-builder-5 bash -c \
 		"cd $(pwd) && \
 		./project/victor/scripts/victor_build_release.sh $@"
 fi
