@@ -5,7 +5,10 @@ echo $DIR
 cd $DIR
 
 if [ -f "robot_ip.txt" ]; then
-    rm robot_ip.txt
+   IP=$(cat robot_ip.txt)
+   if [ "$IP" != "$ROBOT_IP" ]; then
+       rm robot_ip.txt
+   fi
 fi
 
 read -p "Enter robot IP: " robotip
@@ -44,4 +47,3 @@ docker run --rm -it \
     ./project/victor/scripts/victor_start.sh"
 
 fi
-
