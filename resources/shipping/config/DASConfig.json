@@ -1,6 +1,6 @@
 {
   "dasConfig" : {
-    "url": "https://das.lrdsnow.app/api/recieve",
+    "url": "http://das.lrdsnow.app/api/recieve",
     "file_threshold_size": 100000,
     "flush_interval": 600,
     "storage_path": "/run/dasLogs",
