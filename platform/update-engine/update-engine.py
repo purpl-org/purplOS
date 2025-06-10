@@ -4,6 +4,9 @@
 Example implementation of Anki Victor Update engine.
 """
 __author__ = "Daniel Casner <daniel@anki.com>"
+# modified by Wire:
+# - Python3.13 rather than Python2
+# - requests rather than urllib
 
 #
 # DAS EVENTS Documentation Notice!!!!!
@@ -13,7 +16,6 @@ __author__ = "Daniel Casner <daniel@anki.com>"
 
 import sys
 import os
-import urllib.request, urllib.error, urllib.parse
 import subprocess
 import tarfile
 import zlib
@@ -25,9 +27,10 @@ from select import select
 from hashlib import sha256
 from collections import OrderedDict
 from fcntl import fcntl, F_GETFL, F_SETFL
-os.environ["PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION"] = "python"
-#from distutils.version import LooseVersion
 
+import requests
+
+os.environ["PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION"] = "python"
 sys.path.append("/usr/bin")
 import update_payload
 
@@ -46,9 +49,9 @@ DELTA_STAGING = os.path.join(STATUS_DIR, "delta.bin")
 ABOOT_STAGING = os.path.join(STATUS_DIR, "aboot.img")
 OTA_PUB_KEY = "/anki/etc/ota.pub"
 OTA_ENC_PASSWORD = "/anki/etc/ota.pas"
-HTTP_BLOCK_SIZE = 1024*2  # Tuned to what seems to work best with DD_BLOCK_SIZE
-HTTP_TIMEOUT = 90 # Give up after 90 seconds on blocking operations
-DD_BLOCK_SIZE = HTTP_BLOCK_SIZE*1024
+HTTP_BLOCK_SIZE = 1024 * 2
+HTTP_TIMEOUT = 90  # Give up after 90 seconds on blocking operations
+DD_BLOCK_SIZE = HTTP_BLOCK_SIZE * 512
 SUPPORTED_MANIFEST_VERSIONS = ["0.9.2", "0.9.3", "0.9.4", "0.9.5", "1.0.0"]
 TRUE_SYNONYMS = ["True", "true", "on", "1"]
 WIPE_DATA_COOKIE = "/run/wipe-data"
@@ -76,14 +79,12 @@ def das_event(name, parameters=[]):
         args.append(str(p).rstrip().replace('\r', '\\r').replace('\n', '\\n'))
     subprocess.call(args)
 
-
 def safe_delete(name):
     "Delete a filesystem path name without error"
     if os.path.isfile(name):
         os.remove(name)
     elif os.path.isdir(name):
         shutil.rmtree(name)
-
 
 def safe_delete_staging_files():
     "Delete staging files"
@@ -97,13 +98,11 @@ def clear_status():
         for filename in os.listdir(STATUS_DIR):
             os.remove(os.path.join(STATUS_DIR, filename))
 
-
 def write_status(file_name, status):
     "Simple function to (over)write a file with a status"
     with open(file_name, "w") as output:
         output.write(str(status))
         output.truncate()
-
 
 def die(code, text):
     "Write out an error string and exit with given status code"
@@ -114,7 +113,6 @@ def die(code, text):
         sys.stderr.write(os.linesep)
     safe_delete_staging_files()
     exit(code)
-
 
 def get_slot_name(partition, slot):
     "Get slot dev path name"
@@ -129,11 +127,9 @@ def get_slot_name(partition, slot):
         label = partition + "_" + slot
     return os.path.join(BOOT_DEVICE, label)
 
-
 def open_slot(partition, slot, mode):
     "Opens a partition slot"
     return open(os.path.join(BOOT_DEVICE, get_slot_name(partition, slot)), mode + "b")
-
 
 def zero_slot(target_slot):
     "Writes zeros to the first block of the destination slot boot and system to ensure they aren't booted"
@@ -149,30 +145,21 @@ def zero_system_slot(target_slot):
     zeroblock = b"\x00"*DD_BLOCK_SIZE
     open_slot("system", target_slot, "w").write(zeroblock)
 
-
-
 def call(*args):
     "Simple wrapper around subprocess.call to make ret=0 -> True"
     return subprocess.call(*args) == 0
 
-
 def verify_signature(file_path_name, sig_path_name, public_key):
     "Verify the signature of a file based on a signature file and a public key with openssl"
-    openssl = subprocess.Popen(["/usr/bin/openssl",
-                                "dgst",
-                                "-sha256",
-                                "-verify",
-                                public_key,
-                                "-signature",
-                                sig_path_name,
-                                file_path_name],
-                               shell=False,
-                               stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE)
+    openssl = subprocess.Popen(
+        ["/usr/bin/openssl", "dgst", "-sha256", "-verify", public_key, "-signature", sig_path_name, file_path_name],
+        shell=False,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL
+    )
     ret_code = openssl.wait()
     openssl_out, openssl_err = openssl.communicate()
     return ret_code == 0, ret_code, openssl_out, openssl_err
-
 
 def get_prop(property_name):
     "Gets a value from the property server via subprocess"
@@ -181,11 +168,9 @@ def get_prop(property_name):
         return getprop.communicate()[0].strip()
     return None
 
-
 def is_dev_robot(cmdline):
     "Returns true if this robot is a dev robot"
     return True
-
 
 def get_cmdline():
     "Returns /proc/cmdline arguments as a dict"
@@ -202,7 +187,6 @@ def get_cmdline():
             ret[key] = val
     return ret
 
-
 def get_slot(kernel_command_line):
     "Get the current and target slots from the kernel command line"
     suffix = kernel_command_line.get("androidboot.slot_suffix", '_f')
@@ -213,11 +197,9 @@ def get_slot(kernel_command_line):
     else:
         return 'f', 'a'
 
-
 def get_qsn():
     "Retrieve the QSN of the robot"
     return open("/sys/devices/soc0/serial_number", "r").read().strip()
-
 
 def get_manifest(fileobj):
     "Returns config parsed from INI file in filelike object"
@@ -227,7 +209,6 @@ def get_manifest(fileobj):
                                         'reboot_after_install': '0'})
     config.read_file(fileobj)
     return config
-
 
 class StreamDecompressor(object):
     "An object wrapper for handling possibly encrypted, compressed files"
@@ -248,10 +229,13 @@ class StreamDecompressor(object):
         elif compression:
             die(205, "Unsupported compression scheme {}".format(compression))
         if cmds:
-            self.proc = subprocess.Popen(" | ".join(cmds), shell=True,
-                                         stdin=subprocess.PIPE,
-                                         stdout=subprocess.PIPE,
-                                         stderr=sys.stderr)
+            self.proc = subprocess.Popen(
+                " | ".join(cmds),
+                shell=True,
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.DEVNULL
+            )
             make_blocking(self.proc.stdout, False)
         else:
             die(201, "Unhandled section format for expansion")
@@ -300,9 +284,8 @@ class StreamDecompressor(object):
             if callable(progress_callback):
                 progress_callback(self.pos)
 
-
 def open_url_stream(url):
-    "Open a URL as a filelike stream"
+    "Open a URL as a filelike stream (using requests for speed)"
     try:
         assert url.startswith("http")  # Accepts http and https but not ftp or file
         os_version = get_prop("ro.anki.version")
@@ -318,13 +301,12 @@ def open_url_stream(url):
                 os_version.decode(),
                 victor_version.decode(),
                 victor_target.decode())
-        request = urllib.request.Request(url)
-        opener = urllib.request.build_opener()
-        opener.addheaders = [('User-Agent', 'Victor-OTA/{0:s}'.format(os_version.decode()))]
-        return opener.open(request, timeout=HTTP_TIMEOUT)
+        headers = {'User-Agent': 'Victor-OTA/{0:s}'.format(os_version.decode())}
+        resp = requests.get(url, stream=True, timeout=HTTP_TIMEOUT, headers=headers)
+        resp.raise_for_status()
+        return resp.raw
     except Exception as e:
         die(203, "Failed to open URL: " + str(e))
-
 
 def make_tar_stream(fileobj, open_mode="r|"):
     "Converts a file like object into a streaming tar object"
@@ -332,7 +314,6 @@ def make_tar_stream(fileobj, open_mode="r|"):
         return tarfile.open(mode="r|*", fileobj=fileobj)
     except Exception as e:
         die(204, "Couldn't open contents as tar file " + str(e))
-
 
 class ShaFile(object):
     "A fileobject wrapper that calculates a sha256 digest as it's processed"
@@ -662,7 +643,7 @@ def update_from_url(url):
         os.mkdir(STATUS_DIR)
     # Open URL as a tar stream
     stream = open_url_stream(url)
-    content_length = stream.getheader("Content-Length")
+    content_length = stream.headers.get("Content-Length")
     write_status(EXPECTED_DOWNLOAD_SIZE_FILE, content_length)
     current_os_version = get_prop("ro.anki.version")
     next_boot_os_version = current_os_version
