@@ -24,6 +24,7 @@
 #include "engine/actions/basicActions.h"
 #include "engine/aiComponent/behaviorComponent/behaviorExternalInterface/beiRobotInfo.h"
 #include "engine/aiComponent/behaviorComponent/behaviorTimers.h"
+#include "engine/components/backpackLights/engineBackpackLightComponent.h"
 #include "engine/aiComponent/behaviorComponent/heldInPalmTracker.h"
 #include "engine/aiComponent/beiConditions/beiConditionFactory.h"
 #include "engine/aiComponent/beiConditions/iBEICondition.h"
@@ -139,6 +140,7 @@ void BehaviorReactToTouchPetting::AlwaysHandleInScope(const EngineToGameEvent& e
         auto touchTimePress = BaseStationTimer::getInstance()->GetCurrentTimeInSeconds();
         _checkForTransitionTime = touchTimePress + _timeTilTouchCheck;
         _numPressesAtCurrentBlissLevel++;
+        GetBEI().GetBackpackLightComponent().SetBackpackAnimation(BackpackAnimationTrigger::Petting);
       } else {
         auto touchTimeRelease = BaseStationTimer::getInstance()->GetCurrentTimeInSeconds();
         _checkForTimeoutTimeBliss = touchTimeRelease + _blissTimeout;
@@ -152,6 +154,7 @@ void BehaviorReactToTouchPetting::AlwaysHandleInScope(const EngineToGameEvent& e
         CancelDelegates();
         ResetTouchState();
         CancelSelf();
+        GetBEI().GetBackpackLightComponent().ClearAllBackpackLightConfigs();
       }
       break;
     }
@@ -173,6 +176,7 @@ bool BehaviorReactToTouchPetting::WantsToBeActivatedBehavior() const
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BehaviorReactToTouchPetting::InitBehavior()
 {
+  GetBEI().GetBackpackLightComponent().ClearAllBackpackLightConfigs();
   _numPressesAtCurrentBlissLevel = 0;
   _currBlissLevel = 0;
 }
@@ -385,6 +389,7 @@ void BehaviorReactToTouchPetting::OnBehaviorDeactivated()
     // bit (rather than, e.g. going back into exploring)
     GetAIComp<AIWhiteboard>().OfferPostBehaviorSuggestion( PostBehaviorSuggestions::Nothing );
   }
+  GetBEI().GetBackpackLightComponent().ClearAllBackpackLightConfigs();
 
   ResetTouchState();
 }
