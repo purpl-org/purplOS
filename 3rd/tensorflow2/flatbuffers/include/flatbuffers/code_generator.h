@@ -23,7 +23,11 @@
 
 namespace flatbuffers {
 
-// An code generator interface for producing converting flatbuffer schema into
+struct CodeGenOptions {
+  std::string output_path;
+};
+
+// A code generator interface for producing converting flatbuffer schema into
 // code.
 class CodeGenerator {
  public:
@@ -32,8 +36,11 @@ class CodeGenerator {
   enum Status {
     OK = 0,
     ERROR = 1,
-    NOT_IMPLEMENTED = 2,
+    FAILED_VERIFICATION = 2,
+    NOT_IMPLEMENTED = 3
   };
+
+  std::string status_detail;
 
   // Generate code from the provided `parser`.
   //
@@ -41,9 +48,20 @@ class CodeGenerator {
   virtual Status GenerateCode(const Parser &parser, const std::string &path,
                               const std::string &filename) = 0;
 
+  // Generate code from the provided `parser` and place it in the output.
+  virtual Status GenerateCodeString(const Parser &parser,
+                                    const std::string &filename,
+                                    std::string &output) {
+    (void)parser;
+    (void)filename;
+    (void)output;
+    return Status::NOT_IMPLEMENTED;
+  }
+
   // Generate code from the provided `buffer` of given `length`. The buffer is a
   // serialized reflection.fbs.
-  virtual Status GenerateCode(const uint8_t *buffer, int64_t length) = 0;
+  virtual Status GenerateCode(const uint8_t *buffer, int64_t length,
+                              const CodeGenOptions &options) = 0;
 
   virtual Status GenerateMakeRule(const Parser &parser, const std::string &path,
                                   const std::string &filename,
@@ -52,11 +70,17 @@ class CodeGenerator {
   virtual Status GenerateGrpcCode(const Parser &parser, const std::string &path,
                                   const std::string &filename) = 0;
 
+  virtual Status GenerateRootFile(const Parser &parser,
+                                  const std::string &path) = 0;
+
   virtual bool IsSchemaOnly() const = 0;
 
   virtual bool SupportsBfbsGeneration() const = 0;
 
+  virtual bool SupportsRootFileGeneration() const = 0;
+
   virtual IDLOptions::Language Language() const = 0;
+
   virtual std::string LanguageName() const = 0;
 
  protected:

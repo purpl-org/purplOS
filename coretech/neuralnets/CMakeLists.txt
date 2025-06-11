@@ -146,8 +146,14 @@ elseif(NEURAL_NET_PLATFORM STREQUAL "TFLite")
         -lm
 
         ${TENSORFLOW_PATH}/lib/libflatbuffers.a
+        ${TENSORFLOW_PATH}/lib/libprotobuf.a
+        ${TENSORFLOW_PATH}/lib/libprotoc.a
 
+        ${TENSORFLOW_PATH}/lib/libxnnpack-delegate.a
         ${TENSORFLOW_PATH}/lib/libXNNPACK.a
+        ${TENSORFLOW_PATH}/lib/libmicrokernels-all.a
+        ${TENSORFLOW_PATH}/lib/libmicrokernels-prod.a
+        ${TENSORFLOW_PATH}/lib/libcpuinfo_internals.a
         ${TENSORFLOW_PATH}/lib/libcpuinfo.a
         ${TENSORFLOW_PATH}/lib/libpthreadpool.a
 
@@ -180,10 +186,21 @@ elseif(NEURAL_NET_PLATFORM STREQUAL "TFLite")
         ${TENSORFLOW_PATH}/lib/libruy_tune.a
         ${TENSORFLOW_PATH}/lib/libruy_cpuinfo.a
         ${TENSORFLOW_PATH}/lib/libruy_profiler_instrumentation.a
+        
 
         -pthread
         -ldl
-
+        ${TENSORFLOW_PATH}/lib/libabsl_log_internal_message.a
+        ${TENSORFLOW_PATH}/lib/libabsl_log_internal_format.a
+        ${TENSORFLOW_PATH}/lib/libabsl_log_internal_proto.a
+        ${TENSORFLOW_PATH}/lib/libabsl_log_internal_globals.a
+        ${TENSORFLOW_PATH}/lib/libabsl_log_internal_log_sink_set.a
+        ${TENSORFLOW_PATH}/lib/libabsl_log_internal_nullguard.a
+        ${TENSORFLOW_PATH}/lib/libabsl_log_internal_check_op.a
+        ${TENSORFLOW_PATH}/lib/libabsl_log_globals.a
+        ${TENSORFLOW_PATH}/lib/libabsl_examine_stack.a
+        ${TENSORFLOW_PATH}/lib/libabsl_log_sink.a
+        ${TENSORFLOW_PATH}/lib/libabsl_log_internal_log_sink_set.a
         ${TENSORFLOW_PATH}/lib/libabsl_bad_any_cast_impl.a
         ${TENSORFLOW_PATH}/lib/libabsl_hash.a
         ${TENSORFLOW_PATH}/lib/libabsl_bad_variant_access.a
@@ -205,6 +222,7 @@ elseif(NEURAL_NET_PLATFORM STREQUAL "TFLite")
         ${TENSORFLOW_PATH}/lib/libabsl_synchronization.a
         ${TENSORFLOW_PATH}/lib/libabsl_stacktrace.a
         ${TENSORFLOW_PATH}/lib/libabsl_symbolize.a
+        ${TENSORFLOW_PATH}/lib/libabsl_kernel_timeout_internal.a
         ${TENSORFLOW_PATH}/lib/libabsl_debugging_internal.a
         ${TENSORFLOW_PATH}/lib/libabsl_demangle_internal.a
         ${TENSORFLOW_PATH}/lib/libabsl_graphcycles_internal.a
