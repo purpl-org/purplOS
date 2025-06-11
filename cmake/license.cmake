@@ -372,7 +372,7 @@ function(check_licenses)
     foreach(lib libcutils libglib libgio libgobject libffi libdl libz libresolv libgmodule libpcre
                 Accelerate AppKit AudioToolbox AudioUnit CoreAudio CoreBluetooth CoreFoundation
                 OpenCL OpenGL Foundation GLUT Security
-                "-Wl" "-ldl" "-fsanitize=address" "-lm" "-lpthread"
+                "-Wl" "-ldl" "-fsanitize=address" "-lm" "-lpthread" "-pthread"
                 ankiutil                     # hack: because of other hacks
                 Controller CppController ode # webots
                 opus                         # cloud
@@ -503,6 +503,12 @@ function(check_licenses)
                 libruy_trmul.a
                 libruy_tune.a
                 libruy_wait.a
+                libprotobuf.a
+                libprotoc.a
+                libxnnpack-delegate.a
+                libmicrokernels-all.a
+                libmicrokernels-prod.a
+                libabsl_kernel_timeout_internal.a
                 libtensorflow-lite.a
                 libXNNPACK.a # end: tensorflow lite libs
                 liblttng-ust.so
