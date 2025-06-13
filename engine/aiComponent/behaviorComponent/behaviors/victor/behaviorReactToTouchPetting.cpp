@@ -108,6 +108,7 @@ BehaviorReactToTouchPetting::BehaviorReactToTouchPetting(const Json::Value& conf
   SubscribeToTags({{
     ExternalInterface::MessageEngineToGameTag::TouchButtonEvent,
     ExternalInterface::MessageEngineToGameTag::RobotFallingEvent,
+    //ExternalInterface::MessageEngineToGameTag::RobotObservedPet,
   }});
 }
 
@@ -158,6 +159,17 @@ void BehaviorReactToTouchPetting::AlwaysHandleInScope(const EngineToGameEvent& e
       }
       break;
     }
+    // case ExternalInterface::MessageEngineToGameTag::RobotObservedPet:
+    // {
+    //   GetBEI().GetBackpackLightComponent().SetBackpackAnimation(BackpackAnimationTrigger::Petting);
+    //   int32_t petID = event.GetData().Get_RobotObservedPet().petID;
+    //   Anki::Vision::PetType petType = event.GetData().Get_RobotObservedPet().petType;
+    //   uint32_t numTimesObserved = event.GetData().Get_RobotObservedPet().numTimesObserved;
+    //   PRINT_NAMED_INFO("BehaviorReactToTouchPetting.Pet.ID", "%i", petID);
+    //   PRINT_NAMED_INFO("BehaviorReactToTouchPetting.Pet.Type", "%s", EnumToString(petType));
+    //   PRINT_NAMED_INFO("BehaviorReactToTouchPetting.Pet.NumObserved", "%u", numTimesObserved);
+    //   break;
+    // }
     default: {
       PRINT_NAMED_ERROR("BehaviorReactToTouchPetting.AlwaysHandle.InvalidEvent",
                         "%s", MessageEngineToGameTagToString(tag));
