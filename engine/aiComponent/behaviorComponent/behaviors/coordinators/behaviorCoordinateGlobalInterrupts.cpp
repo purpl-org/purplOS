@@ -110,7 +110,6 @@ namespace{
     BEHAVIOR_ID(DanceToTheBeat),
     BEHAVIOR_ID(ReactToObstacle),
     BEHAVIOR_ID(ReactToSoundAwake),
-    BEHAVIOR_ID(PetDetection),
   };
 
   static const std::set<BehaviorID> kBehaviorIDsToSuppressWhenInAnUntintentionalPerformance = {
@@ -119,10 +118,10 @@ namespace{
     BEHAVIOR_ID(DanceToTheBeat),
     BEHAVIOR_ID(ReactToObstacle),
     BEHAVIOR_ID(ReactToSoundAwake),
-    BEHAVIOR_ID(PetDetection),
   };
 
-    static const std::set<BehaviorID> kBehaviorIDsToSuppressWhileDetectingPets = {
+  // while the behavior is actually activated
+  static const std::set<BehaviorID> kBehaviorIDsToSuppressWhileDetectingPets = {
     BEHAVIOR_ID(DanceToTheBeatCoordinator),
     BEHAVIOR_ID(ListenForBeats),
     BEHAVIOR_ID(DanceToTheBeat),
@@ -215,8 +214,7 @@ void BehaviorCoordinateGlobalInterrupts::InitPassThrough()
   _iConfig.behaviorsThatShouldntReactToUnexpectedMovement.AddBehavior(BC, BEHAVIOR_CLASS(ClearChargerArea));
   _iConfig.behaviorsThatShouldntReactToUnexpectedMovement.AddBehavior(BC, BEHAVIOR_CLASS(ReactToHand));
   _iConfig.behaviorsThatShouldntReactToUnexpectedMovement.AddBehavior(BC, BEHAVIOR_CLASS(PetDetection));
-  _iConfig.behaviorsThatShouldntReactToUnexpectedMovement.AddBehavior(BC, BEHAVIOR_ID(PossibleIntentionalPerformance));
-  _iConfig.behaviorsThatShouldntReactToUnexpectedMovement.AddBehavior(BC, BEHAVIOR_ID(PossibleUnintentionalPerformance));
+  _iConfig.behaviorsThatShouldntReactToUnexpectedMovement.AddBehavior(BC, BEHAVIOR_CLASS(PossiblePerformance));
   _iConfig.reactToUnexpectedMovementBehavior = BC.FindBehaviorByID(BEHAVIOR_ID(ReactToUnexpectedMovement));
 
   _iConfig.reactToSoundAwakeBehavior = BC.FindBehaviorByID(BEHAVIOR_ID(ReactToSoundAwake));
