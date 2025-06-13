@@ -15,14 +15,16 @@ limitations under the License.
 #ifndef TENSORFLOW_LITE_EXPERIMENTAL_ACCELERATION_MINI_BENCHMARK_MINI_BENCHMARK_H_
 #define TENSORFLOW_LITE_EXPERIMENTAL_ACCELERATION_MINI_BENCHMARK_MINI_BENCHMARK_H_
 
+#include <cstdint>
 #include <functional>
 #include <memory>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
+#include "absl/base/thread_annotations.h"
 #include "absl/synchronization/mutex.h"
-#include "tensorflow/lite/experimental/acceleration/configuration/configuration_generated.h"
+#include "tensorflow/lite/acceleration/configuration/configuration_generated.h"
 
 namespace tflite {
 namespace acceleration {
@@ -118,8 +120,8 @@ class MinibenchmarkImplementationRegistry {
 }  // namespace acceleration
 }  // namespace tflite
 
-#define TFLITE_REGISTER_MINI_BENCMARK_FACTORY_FUNCTION(name, f) \
-  static auto* g_tflite_mini_benchmark_##name##_ =              \
+#define TFLITE_REGISTER_MINI_BENCHMARK_FACTORY_FUNCTION(name, f) \
+  static auto* g_tflite_mini_benchmark_##name##_ =               \
       new MinibenchmarkImplementationRegistry::Register(#name, f);
 
 #endif  // TENSORFLOW_LITE_EXPERIMENTAL_ACCELERATION_MINI_BENCHMARK_MINI_BENCHMARK_H_

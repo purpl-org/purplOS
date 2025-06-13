@@ -42,10 +42,22 @@ TfLiteStatus CreateNewTensorWithDifferentType(TfLiteContext* context,
                                               int* new_tensor_index);
 
 // Retrieves the corresponding TfLiteContext of a subgraph given a subgraph
-// index. If an invalid subgraph index is given, then returns nullptr.
-// NOTE: Entry point for C node plugin API.
-TfLiteContext* GetSubgraphContext(const TfLiteContext* context,
-                                  int subgraph_index);
+// index and switches to the delegate context for this subgraph. If an invalid
+// subgraph index is given, returns kTfLiteError.
+// NOTE: This function is expected to be paired with ReleaseSubgraphContext()
+// once the delegate preparation is done and/or the delegate context functions
+// are no longer needed.
+TfLiteStatus AcquireSubgraphContext(const TfLiteContext* context,
+                                    int subgraph_index,
+                                    TfLiteContext** acquired_context);
+
+// Releases the subgraph context by switching back to the TFLite kernel
+// context for this specified subgraph.
+// NOTE: This function is expected to be used after AcquireSubgraphContext()
+// once the delegate preparation is done and/or the delegate context functions
+// are no longer needed.
+TfLiteStatus ReleaseSubgraphContext(const TfLiteContext* context,
+                                    int subgraph_index);
 
 // Marks the subgraph with the given index as delegation-skippable. Returns
 // kTfLiteOk if the given subgraph index is valid and is successfully marked
@@ -108,25 +120,14 @@ class GraphPartitionHelper {
   // replaced with one delegate kernel (i.e. a kTfLiteBuiltinDelegate op).
   // If 'unsupported_nodes_info' is provided, it will be populated with
   // information about all different unsupported nodes.
-  virtual TfLiteStatus Partition(
-      std::set<std::string>* unsupported_nodes_info) {
-    return PartitionImpl(unsupported_nodes_info, 0,
-                         std::numeric_limits<int>::max());
-  }
-
-#ifdef TFLITE_DEBUG_DELEGATE
-  // Partition the graph into node subsets such that each subset could be
-  // replaced with one delegate kernel (i.e. a kTfLiteBuiltinDelegate op).
-  // If 'unsupported_nodes_info' is provided, it will be populated with
-  // information about all different unsupported nodes.
   // The 'start_node_index' and 'end_node_index' define the range of nodes
   // that could be delegated.
-  virtual TfLiteStatus Partition(std::set<std::string>* unsupported_nodes_info,
-                                 int start_node_index, int end_node_index) {
+  TfLiteStatus Partition(std::set<std::string>* unsupported_nodes_info,
+                         int start_node_index = 0,
+                         int end_node_index = std::numeric_limits<int>::max()) {
     return PartitionImpl(unsupported_nodes_info, start_node_index,
                          end_node_index);
   }
-#endif  // TFLITE_DEBUG_DELEGATE
 
   // Returns the first n largest partitions or all if #partitions is less than
   // 'n' and each parition has at least (>=) 'min_nodes_per_partition' nodes.
