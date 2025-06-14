@@ -100,8 +100,9 @@ void BehaviorPetDetection::AlwaysHandleInScope(const EngineToGameEvent& ev)
   }
 
   const auto& petMsg = ev.GetData().Get_RobotObservedPet();
-  // Okao hits us with a burst of events whenever a pet is seen  
-  if (petMsg.numTimesObserved >= 5) {
+  // okao hits us with a burst of events whenever a pet is seen.
+  // let's account for false-positives a little bit by needing 3 events
+  if (petMsg.numTimesObserved >= 3) {
     _isDog = (petMsg.petType == Anki::Vision::PetType::Dog);
     _activate = true;
   }
