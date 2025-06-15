@@ -35,6 +35,12 @@ protected:
     modifiers.wantsToBeActivatedWhenOnCharger       = true;
     modifiers.wantsToBeActivatedWhenOffTreads       = true;
   }
+
+  virtual void GetAllDelegates(std::set<IBehavior*>& delegates) const override;
+
+  virtual void InitBehavior() override;
+  virtual void PlayAnimation();
+
   virtual void GetBehaviorJsonKeys(std::set<const char*>& expectedKeys) const override;
   
   virtual bool WantsToBeActivatedBehavior() const override;
@@ -43,6 +49,13 @@ protected:
   virtual void AlwaysHandleInScope(const EngineToGameEvent& event) override;
 
 private:
+
+  struct InstanceConfig {
+    InstanceConfig();
+    ICozmoBehaviorPtr driveOffChargerBehavior;
+  };
+
+  InstanceConfig _iConfig;
 
   bool _activate;
   bool _isDog;

@@ -14,6 +14,7 @@
 #include "engine/aiComponent/beiConditions/iBEICondition.h"
 #include "engine/aiComponent/behaviorComponent/behaviorExternalInterface/beiRobotInfo.h"
 #include "engine/audio/engineRobotAudioClient.h"
+#include "engine/aiComponent/behaviorComponent/behaviorContainer.h"
 
 #include "clad/audio/audioEventTypes.h"
 
@@ -40,11 +41,31 @@ BehaviorPetDetection::BehaviorPetDetection(const Json::Value& config)
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+BehaviorPetDetection::InstanceConfig::InstanceConfig()
+{
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void BehaviorPetDetection::InitBehavior()
+{
+  const auto& BC = GetBEI().GetBehaviorContainer();
+
+  _iConfig.driveOffChargerBehavior = BC.FindBehaviorByID( BEHAVIOR_ID( DriveOffChargerStraight ) );
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void BehaviorPetDetection::GetAllDelegates(std::set<IBehavior*>& delegates) const
+{
+  delegates.insert( _iConfig.driveOffChargerBehavior.get() );
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 bool BehaviorPetDetection::WantsToBeActivatedBehavior() const
 {
   return _activate;
 }
 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BehaviorPetDetection::GetBehaviorJsonKeys(std::set<const char*>&) const
 {
 }
@@ -52,6 +73,7 @@ void BehaviorPetDetection::GetBehaviorJsonKeys(std::set<const char*>&) const
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BehaviorPetDetection::OnBehaviorActivated()
 {
+
   // ther first three events have a 10 second cooldown
   // the next one has a 100-200 second cooldown
   CancelDelegates();
@@ -74,13 +96,30 @@ void BehaviorPetDetection::OnBehaviorActivated()
   GetBEI().GetRobotAudioClient().PostEvent(AMD_GE_GE::Play__Robot_Vic_Sfx__Head_Down_Long_Excited, AMD_GOT::Behavior);
   GetBEI().GetRobotAudioClient().PostEvent(AMD_GE_GE::Play__Robot_Vic_Sfx__Purr_Single, AMD_GOT::Behavior);
 
+
+  if( GetBEI().GetRobotInfo().IsOnChargerPlatform() &&
+      _iConfig.driveOffChargerBehavior->WantsToBeActivated() ) {
+      DelegateIfInControl(_iConfig.driveOffChargerBehavior.get(), &BehaviorPetDetection::PlayAnimation);
+  } else {
+    PlayAnimation();
+  }
+
+  _activate = false;
+}
+
+void BehaviorPetDetection::PlayAnimation() {
+  CancelDelegates();
+  AnimationTrigger trig = _isDog ? AnimationTrigger::PetDetectionDog
+                                 : AnimationTrigger::PetDetectionCat;
+  auto* action = new TriggerLiftSafeAnimationAction(trig);
+  GetBEI().GetRobotAudioClient().PostEvent(AMD_GE_GE::Play__Robot_Vic_Sfx__Head_Down_Long_Excited, AMD_GOT::Behavior);
+  GetBEI().GetRobotAudioClient().PostEvent(AMD_GE_GE::Play__Robot_Vic_Sfx__Purr_Single, AMD_GOT::Behavior);
+
   DelegateIfInControl(action, [](const ActionResult& result) {
     ANKI_VERIFY( result == ActionResult::SUCCESS,
                  "BehaviorPetDetection.OnBehaviorActivated.AnimFail",
                  "Could not play animation" );
   });
-
-  _activate = false;
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
