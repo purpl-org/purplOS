@@ -33,7 +33,7 @@ static const std::unordered_map<uint16_t,std::string> kFaultText = {
   {980,  "Camera issue. Reboot the robot if this persists."},
 };
 
-static const char* kSupportURL        = "error.pvic.xyz";
+static const char* kSupportURL        = "error.p-2.xyz";
 static const char* kVectorWillRestart = "vector will restart";
 
 static constexpr float kHeadScale = 0.7f;
