@@ -60,7 +60,6 @@ private:
 
   bool _activate;
   bool _isDog;
-  int  _idToIgnore = 0;
   int  _activationCount = 0;
   std::chrono::steady_clock::time_point _cooldownUntil;
 

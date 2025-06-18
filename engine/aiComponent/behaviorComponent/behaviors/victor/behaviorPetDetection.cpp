@@ -33,7 +33,6 @@ BehaviorPetDetection::BehaviorPetDetection(const Json::Value& config)
  , _activate(false)
  , _isDog(false)
  , _activationCount(0)
- , _idToIgnore(0)
  , _cooldownUntil(Clock::now())
 {
   SubscribeToTags({{
@@ -145,7 +144,6 @@ void BehaviorPetDetection::AlwaysHandleInScope(const EngineToGameEvent& ev)
   if (!_activate) {
     if (petMsg.numTimesObserved >= 6) {
       if (petMsg.img_rect.height > 100) {
-        _idToIgnore = petMsg.petID;
         _isDog = (petMsg.petType == Anki::Vision::PetType::Dog);
         _activate = true;
       } else {
