@@ -34,6 +34,7 @@ protected:
     modifiers.behaviorAlwaysDelegates               = true;
     modifiers.wantsToBeActivatedWhenOnCharger       = true;
     modifiers.wantsToBeActivatedWhenOffTreads       = true;
+    modifiers.visionModesForActiveScope->insert({VisionMode::Pets, EVisionUpdateFrequency::Low});
   }
 
   virtual void GetAllDelegates(std::set<IBehavior*>& delegates) const override;
@@ -59,6 +60,7 @@ private:
 
   bool _activate;
   bool _isDog;
+  int  _idToIgnore = 0;
   int  _activationCount = 0;
   std::chrono::steady_clock::time_point _cooldownUntil;
 
