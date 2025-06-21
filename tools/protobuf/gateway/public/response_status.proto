@@ -38,6 +38,7 @@ message ResponseStatus {
     // Currently updating values from another call.
     ERROR_UPDATE_IN_PROGRESS = 102;
   }
-  // The generic status code to give high-level insight into the progress of a given message.
+  // The generic status code to give high-level insight into the progress of a
+  // given message.
   StatusCode code = 1;
 }

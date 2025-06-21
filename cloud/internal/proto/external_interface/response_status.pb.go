@@ -108,7 +108,8 @@ func (ResponseStatus_StatusCode) EnumDescriptor() ([]byte, []int) {
 // This will indicate the generic state of the request.
 type ResponseStatus struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The generic status code to give high-level insight into the progress of a given message.
+	// The generic status code to give high-level insight into the progress of a
+	// given message.
 	Code          ResponseStatus_StatusCode `protobuf:"varint,1,opt,name=code,proto3,enum=Anki.Vector.external_interface.ResponseStatus_StatusCode" json:"code,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
