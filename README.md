@@ -43,7 +43,7 @@ cd ~/wire-os-victor
 # only works on M1-M4 Macs at the moment, not Intel
 
  - Prereqs: Make sure you have [brew](https://brew.sh/) installed.
-   -  Then: `brew install pyenv git-lfs ccache wget`
+   -  Then: `brew install pyenv git-lfs ccache wget go upx`
 
 1. Clone the repo and cd into it:
 
