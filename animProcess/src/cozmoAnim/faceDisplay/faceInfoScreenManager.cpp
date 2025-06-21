@@ -67,7 +67,7 @@
 
 // CHANGE THIS TO BE YOUR PROJECT'S STUFF
 const std::string OSProject = "WireOS";
-const std::string OSBranch = "snowboy";
+const std::string OSBranch = "main";
 const std::string Creator = "By Wire/kercre123";
 const std::string CreatorWebsite = "keriganc.com";
 

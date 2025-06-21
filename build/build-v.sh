@@ -92,5 +92,5 @@ else
 fi
 
 echo
-echo "Complete."
+echo -e "\e[1;32mComplete.\e[0m"
 echo
