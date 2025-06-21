@@ -1576,3 +1576,7 @@ message CheckCloudResponse{
   int32 num_packets = 4;
   int32 expected_packets = 5;
 }
+
+message _FakeAlexaUsage {
+  AlexaAuthState ignored = 1 [deprecated = true];
+}

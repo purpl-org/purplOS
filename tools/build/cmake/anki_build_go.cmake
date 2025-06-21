@@ -1,5 +1,5 @@
 function(anki_build_go)
-  cmake_parse_arguments(ANKI "" "NAME;DIR;OUTPUT_NAME;BUILD_TAGS" "SRC_DIRS;INCLUDE_DIRS;LINK_FLAGS;PKG_CONFIG_PATHS" ${ARGN})
+  cmake_parse_arguments(ANKI "" "NAME;DIR;OUTPUT_NAME;BUILD_TAGS" "SRC_DIRS;INCLUDE_DIRS;LINK_FLAGS;PKG_CONFIG_PATHS;EXTRA_DEPENDS" ${ARGN})
   if(NOT ANKI_NAME OR NOT ANKI_DIR)
     message(FATAL_ERROR "anki_build_go: NAME and DIR are required")
   endif()
@@ -89,8 +89,8 @@ function(anki_build_go)
     OUTPUT ${stamp_file}
     ${cmds}
     WORKING_DIRECTORY ${go_project_dir}
-    DEPENDS ${go_srcs} ${go_project_dir}/go.mod ${go_project_dir}/go.sum
-    COMMENT "building go ${output_name}"
+    DEPENDS ${go_srcs} ${go_project_dir}/go.mod ${go_project_dir}/go.sum ${ANKI_EXTRA_DEPENDS}
+    COMMENT "Building Go target ${output_name}"
     VERBATIM
   )
   add_custom_target(${ANKI_NAME} ALL DEPENDS ${stamp_file})
