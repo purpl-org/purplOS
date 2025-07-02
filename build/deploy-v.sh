@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+if [ -f "ssh_root_key" ]; then
+       mv ssh_root_key robot_sshkey
+fi
+
 chmod 600 robot_sshkey
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/.."
