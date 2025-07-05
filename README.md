@@ -1,6 +1,6 @@
 # purplOS cool-eyes branch
 
-Thanks to @thommomc for making the cool eyes on this branch
+Thanks to (ThommoMC)[https://github.com/thommomc] for making the cool eyes on this branch
 
 Welcome to `purplOS`.
 
