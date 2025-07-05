@@ -44,7 +44,7 @@ namespace Vector {
   CONSOLE_VAR_RANGED(f32,   kProcFace_HotspotFalloff,             CONSOLE_GROUP, 0.48f, 0.05f, 1.f);
 
   CONSOLE_VAR(bool,         kProcFace_EnableAntiAliasing,         CONSOLE_GROUP, true);
-  CONSOLE_VAR_RANGED(s32,   kProcFace_AntiAliasingSize,           CONSOLE_GROUP, 15, 0, 15); // full image antialiasing (3 will use NEON)
+  CONSOLE_VAR_RANGED(s32,   kProcFace_AntiAliasingSize,           CONSOLE_GROUP, 3, 0, 15); // full image antialiasing (3 will use NEON)
   CONSOLE_VAR_ENUM(uint8_t, kProcFace_AntiAliasingFilter,         CONSOLE_GROUP, (uint8_t)Filter::BoxFilter, "None,Box,Gaussian");
   CONSOLE_VAR_RANGED(f32,   kProcFace_AntiAliasingSigmaFraction,  CONSOLE_GROUP, 0.5f, 0.0f, 1.0f);
 
@@ -922,7 +922,7 @@ namespace Vector {
       // ... otherwise convert final image, limited by bounding box, to RGB565
       Rectangle<s32> eyesROI(_faceColMin, _faceRowMin, _faceColMax-_faceColMin+1, _faceRowMax-_faceRowMin+1);
       Vision::ImageRGB565 roi = output.GetROI(eyesROI);
-      _faceCache.img8[_faceCache.finalFace].GetROI(eyesROI).ConvertV2RGB565(drawHue, drawSat, roi);
+      _faceCache.img8[_faceCache.finalFace].GetROI(eyesROI).ConvertV2RGB565(145, 100, 250, 100, 50, 0, roi);
     }
 
     return dirty;
@@ -1022,37 +1022,6 @@ namespace Vector {
     }
 
   } // GetNextBlinkFrame()
-  
-  bool ProceduralFaceDrawer::ApplyScanlines(Vision::ImageRGB& imageHsv, const float opacity, bool dirty)
-  {
-#if PROCEDURALFACE_SCANLINE_FEATURE
-    if(kProcFace_Scanlines) {
-      ANKI_CPU_PROFILE("ApplyScanlines");
-
-      const bool applyScanlines = !Util::IsNear(opacity, 1.f);
-      if (applyScanlines) {
-        DEV_ASSERT(Util::InRange(opacity, 0.f, 1.f), "ProceduralFaceDrawer.ApplyScanlines.InvalidOpacity");
-
-        dirty = true;
-
-        const auto nRows = imageHsv.GetNumRows();
-        const auto nCols = imageHsv.GetNumCols();
-
-        for (int i=0 ; i < nRows ; i++) {
-          if (ShouldApplyScanlineToRow(i)) {
-            auto* thisRow = imageHsv.GetRow(i);
-            for (int j=0 ; j < nCols ; j++) {
-              // the 'blue' channel in an HSV image is the value
-              thisRow[j].b() *= opacity;
-            }
-          }
-        }
-      }
-    }
-#endif
-
-    return dirty;
-  } // ApplyScanlines()
 
   bool ProceduralFaceDrawer::ApplyScanlines(Vision::Image& image8, const float opacity, bool dirty)
   {
@@ -1088,6 +1057,39 @@ namespace Vector {
             for (int j=0 ; j < nCols ; j++) {
               *thisRow *= opacity;
               ++thisRow;
+            }
+          }
+        }
+      }
+    }
+#endif
+
+    return dirty;
+  } // ApplyScanlines()
+
+  bool ProceduralFaceDrawer::ApplyScanlines(Vision::ImageRGBA& imageHsv, const float opacity, bool dirty)
+  {
+#if PROCEDURALFACE_SCANLINE_FEATURE
+    if(kProcFace_Scanlines) {
+      ANKI_CPU_PROFILE("ApplyScanlines");
+
+      const bool applyScanlines = !Util::IsNear(opacity, 1.f);
+      if (applyScanlines) {
+        DEV_ASSERT(Util::InRange(opacity, 0.f, 1.f), "ProceduralFaceDrawer.ApplyScanlines.InvalidOpacity");
+
+        dirty = true;
+
+        const auto nRows = imageHsv.GetNumRows();
+        const auto nCols = imageHsv.GetNumCols();
+
+        for (int i=0 ; i < nRows ; i++) {
+          if (ShouldApplyScanlineToRow(i)) {
+            auto* thisRow = imageHsv.GetRow(i);
+            for (int j=0 ; j < nCols ; j++) {
+              // the 'blue' channel in an HSV image is the value
+              thisRow[j].b() *= opacity;
+              thisRow[j].r() *= opacity;
+              thisRow[j].g() *= opacity;
             }
           }
         }

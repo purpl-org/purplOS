@@ -1,4 +1,3 @@
-
 /**
  * File: image.cpp
  *
@@ -953,7 +952,7 @@ namespace Vision {
   }
 
 #define SATURATE_CAST(x) (x) // cv::saturate_cast<u8>
-  void Image::ConvertV2RGB565(u8 hue, u8 sat, u8 hue2, u8 sat2, u8 hue3, u8 sat3, u8 hue4, u8 sat4, u8 hue5, u8 sat5,ImageRGB565& output)
+  void Image::ConvertV2RGB565(u8 hue, u8 sat, u8 hue2, u8 sat2, u8 hue3, u8 sat3, ImageRGB565& output)
   {
     output.Allocate(GetNumRows(), GetNumCols());
 
@@ -975,16 +974,6 @@ namespace Vision {
     f32 s3 = (f32)sat3 * (1/255.f);
     u32 i3 = floor(h3);
     f32 dh3 = h3 - i3; // decimal part of h
-
-    f32 h4 = (f32)hue4 * (360/256.f) * (1/60.f);
-    f32 s4 = (f32)sat4 * (1/255.f);
-    u32 i4 = floor(h4);
-    f32 dh4 = h4 - i4; // decimal part of h
-
-    f32 h5 = (f32)hue5 * (360/256.f) * (1/60.f);
-    f32 s5 = (f32)sat5 * (1/255.f);
-    u32 i5 = floor(h5);
-    f32 dh5 = h5 - i5; // decimal part of h
 
     if(this->IsContinuous() && output.IsContinuous())
     {
@@ -1108,13 +1097,13 @@ namespace Vision {
 
         float vpqt[4];
         vpqt[0] = v;
-        vpqt[1] = v * (1.f - s4);
-        vpqt[2] = v * (1.f - (s4 * dh4));
-        vpqt[3] = v * (1.f - (s4 * (1.f - dh4)));
+        vpqt[1] = v * (1.f - s2);
+        vpqt[2] = v * (1.f - (s2 * dh2));
+        vpqt[3] = v * (1.f - (s2 * (1.f - dh2)));
 
-        u16 b = SATURATE_CAST(vpqt[sector_data[i4][0]] * 255);
-        u16 g = SATURATE_CAST(vpqt[sector_data[i4][1]] * 255);
-        u16 r = SATURATE_CAST(vpqt[sector_data[i4][2]] * 255);
+        u16 b = SATURATE_CAST(vpqt[sector_data[i2][0]] * 255);
+        u16 g = SATURATE_CAST(vpqt[sector_data[i2][1]] * 255);
+        u16 r = SATURATE_CAST(vpqt[sector_data[i2][2]] * 255);
 
         *out = (r << 8 & 0xF800) |
                (g << 3 & 0x07E0) |
@@ -1141,13 +1130,13 @@ namespace Vision {
 
         float vpqt[4];
         vpqt[0] = v;
-        vpqt[1] = v * (1.f - s5);
-        vpqt[2] = v * (1.f - (s5 * dh5));
-        vpqt[3] = v * (1.f - (s5 * (1.f - dh5)));
+        vpqt[1] = v * (1.f - s);
+        vpqt[2] = v * (1.f - (s * dh));
+        vpqt[3] = v * (1.f - (s * (1.f - dh)));
 
-        u16 b = SATURATE_CAST(vpqt[sector_data[i5][0]] * 255);
-        u16 g = SATURATE_CAST(vpqt[sector_data[i5][1]] * 255);
-        u16 r = SATURATE_CAST(vpqt[sector_data[i5][2]] * 255);
+        u16 b = SATURATE_CAST(vpqt[sector_data[i][0]] * 255);
+        u16 g = SATURATE_CAST(vpqt[sector_data[i][1]] * 255);
+        u16 r = SATURATE_CAST(vpqt[sector_data[i][2]] * 255);
 
         *out = (r << 8 & 0xF800) |
                (g << 3 & 0x07E0) |

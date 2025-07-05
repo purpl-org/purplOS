@@ -1,4 +1,3 @@
-
 /**
  * File: image_fwd.h
  *
@@ -285,7 +284,7 @@ public:
   
   void BoxFilter(ImageBase<u8>& filtered, u32 size) const override;
   
-  void ConvertV2RGB565(u8 hue, u8 sat, u8 hue2, u8 sat2, u8 hue3, u8 sat3, u8 hue4, u8 sat4, u8 hue5, u8 sat5, ImageRGB565& output);
+  void ConvertV2RGB565(u8 hue, u8 sat, u8 hue2, u8 sat2, u8 hue3, u8 sat3, ImageRGB565& output);
   
 protected:
   virtual cv::Scalar GetCvColor(const ColorRGBA& color) const override;
