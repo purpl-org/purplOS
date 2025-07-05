@@ -1,3 +1,4 @@
+
 /**
  * File: image.cpp
  *
@@ -952,17 +953,38 @@ namespace Vision {
   }
 
 #define SATURATE_CAST(x) (x) // cv::saturate_cast<u8>
-  void Image::ConvertV2RGB565(u8 hue, u8 sat, ImageRGB565& output)
+  void Image::ConvertV2RGB565(u8 hue, u8 sat, u8 hue2, u8 sat2, u8 hue3, u8 sat3, u8 hue4, u8 sat4, u8 hue5, u8 sat5,ImageRGB565& output)
   {
     output.Allocate(GetNumRows(), GetNumCols());
+
+    s32 numRows = GetNumRows();
+    s32 numCols = GetNumCols();
+
 
     f32 h = (f32)hue * (360/256.f) * (1/60.f);
     f32 s = (f32)sat * (1/255.f);
     u32 i = floor(h);
     f32 dh = h - i; // decimal part of h
 
-    s32 numRows = GetNumRows();
-    s32 numCols = GetNumCols();
+    f32 h2 = (f32)hue2 * (360/256.f) * (1/60.f);
+    f32 s2 = (f32)sat2 * (1/255.f);
+    u32 i2 = floor(h2);
+    f32 dh2 = h2 - i2; // decimal part of h
+
+    f32 h3 = (f32)hue3 * (360/256.f) * (1/60.f);
+    f32 s3 = (f32)sat3 * (1/255.f);
+    u32 i3 = floor(h3);
+    f32 dh3 = h3 - i3; // decimal part of h
+
+    f32 h4 = (f32)hue4 * (360/256.f) * (1/60.f);
+    f32 s4 = (f32)sat4 * (1/255.f);
+    u32 i4 = floor(h4);
+    f32 dh4 = h4 - i4; // decimal part of h
+
+    f32 h5 = (f32)hue5 * (360/256.f) * (1/60.f);
+    f32 s5 = (f32)sat5 * (1/255.f);
+    u32 i5 = floor(h5);
+    f32 dh5 = h5 - i5; // decimal part of h
 
     if(this->IsContinuous() && output.IsContinuous())
     {
@@ -970,276 +992,12 @@ namespace Vision {
       numRows = 1;
     }
 
-#ifdef __ARM_NEON__
-    // Setup a whole bunch of constants based on the fixed
-    // hue and saturation
-
-    // Vectors to hold LUT table to figure out which variables will
-    // need to be set to r, g, and b
-    const uint8x8_t rp = vcreate_u8(0x00000000FFFF0000);
-    const uint8x8_t rq = vcreate_u8(0x000000000000FF00);
-    const uint8x8_t rt = vcreate_u8(0x000000FF00000000);
-
-    const uint8x8_t gp = vcreate_u8(0x0000FFFF00000000);
-    const uint8x8_t gq = vcreate_u8(0x00000000FF000000);
-    const uint8x8_t gt = vcreate_u8(0x00000000000000FF);
-
-    const uint8x8_t bp = vcreate_u8(0x000000000000FFFF);
-    const uint8x8_t bq = vcreate_u8(0x0000FF0000000000);
-    const uint8x8_t bt = vcreate_u8(0x0000000000FF0000);
-
-    float32x4x3_t hsv1;
-    float32x4x3_t hsv2;
-    hsv1.val[0] = vdupq_n_f32(h);
-    hsv2.val[0] = vdupq_n_f32(h);
-
-    hsv1.val[1] = vdupq_n_f32(s);
-    hsv2.val[1] = vdupq_n_f32(s);
-
-    const float32x4_t f1 = vdupq_n_f32(dh);
-    const uint8x8_t index = vdup_n_u8(i);
-
-    // The following block is repeated 3 times one for each color channel
-
-    // Depending on which of the 6 sectors hue falls in r,g,b may either be set
-    // from V, p, q, or t. index holds which sector each pixel's hue is in and is used
-    // to index into the tables held by rp,rq,rt gp,gq,gt and bp,bq,bt. The result of
-    // the look up will either be all 0s or all 1s. If all 1s, then for this sector the
-    // variable corresponding to the table should be used for this channel.
-    // Ex: HSV = (0, 1, 1) which is sector 0 so r = V, g = t, b = p
-    // rp[0] == 0s, rq[0] == 0s, rt[0] == 0s  r is set from V
-    // gp[0] == 0s, gq[0] == 0s, gt[0] == 1s  g is set from t
-    // bp[0] == 1s, bq[0] == 0s, bt[0] == 0s  b is set from p
-
-    // Check if r should be set from p
-    uint8x8_t which = vtbl1_u8(rp, index);
-    // Expand to f32 and multiply by 0xFFFFFFFF so
-    // elements will be all 1s or all 0s
-    uint16x8_t which16x8 = vmovl_u8(which);
-    uint16x4_t which16x4_1 = vget_low_u16(which16x8);
-    uint32x4_t which32x4_1 = vmovl_u16(which16x4_1);
-    which32x4_1 = vmulq_n_u32(which32x4_1, 0xFFFFFFFF);
-    const float32x4_t  rp_whichF32x4_1 = vreinterpretq_f32_u32(which32x4_1);
-
-    // Check if r should be set from q
-    which = vtbl1_u8(rq, index);
-    // Expand to f32 and multiply by 0xFFFFFFFF so
-    // elements will be all 1s or all 0s
-    which16x8 = vmovl_u8(which);
-    which16x4_1 = vget_low_u16(which16x8);
-    which32x4_1 = vmovl_u16(which16x4_1);
-    which32x4_1 = vmulq_n_u32(which32x4_1, 0xFFFFFFFF);
-    const float32x4_t rq_whichF32x4_1 = vreinterpretq_f32_u32(which32x4_1);
-
-    // Check if r should be set from t
-    which = vtbl1_u8(rt, index);
-    // Expand to f32 and multiply by 0xFFFFFFFF so
-    // elements will be all 1s or all 0s
-    which16x8 = vmovl_u8(which);
-    which16x4_1 = vget_low_u16(which16x8);
-    which32x4_1 = vmovl_u16(which16x4_1);
-    which32x4_1 = vmulq_n_u32(which32x4_1, 0xFFFFFFFF);
-    const float32x4_t rt_whichF32x4_1 = vreinterpretq_f32_u32(which32x4_1);
-
-    which = vtbl1_u8(gp, index);
-    which16x8 = vmovl_u8(which);
-    which16x4_1 = vget_low_u16(which16x8);
-    which32x4_1 = vmovl_u16(which16x4_1);
-    which32x4_1 = vmulq_n_u32(which32x4_1, 0xFFFFFFFF);
-    const float32x4_t gp_whichF32x4_1 = vreinterpretq_f32_u32(which32x4_1);
-
-    which = vtbl1_u8(gq, index);
-    which16x8 = vmovl_u8(which);
-    which16x4_1 = vget_low_u16(which16x8);
-    which32x4_1 = vmovl_u16(which16x4_1);
-    which32x4_1 = vmulq_n_u32(which32x4_1, 0xFFFFFFFF);
-    const float32x4_t gq_whichF32x4_1 = vreinterpretq_f32_u32(which32x4_1);
-
-    which = vtbl1_u8(gt, index);
-    which16x8 = vmovl_u8(which);
-    which16x4_1 = vget_low_u16(which16x8);
-    which32x4_1 = vmovl_u16(which16x4_1);
-    which32x4_1 = vmulq_n_u32(which32x4_1, 0xFFFFFFFF);
-    const float32x4_t gt_whichF32x4_1 = vreinterpretq_f32_u32(which32x4_1);
-
-    which = vtbl1_u8(bp, index);
-    which16x8 = vmovl_u8(which);
-    which16x4_1 = vget_low_u16(which16x8);
-    which32x4_1 = vmovl_u16(which16x4_1);
-    which32x4_1 = vmulq_n_u32(which32x4_1, 0xFFFFFFFF);
-    const float32x4_t bp_whichF32x4_1 = vreinterpretq_f32_u32(which32x4_1);
-
-    which = vtbl1_u8(bq, index);
-    which16x8 = vmovl_u8(which);
-    which16x4_1 = vget_low_u16(which16x8);
-    which32x4_1 = vmovl_u16(which16x4_1);
-    which32x4_1 = vmulq_n_u32(which32x4_1, 0xFFFFFFFF);
-    const float32x4_t bq_whichF32x4_1 = vreinterpretq_f32_u32(which32x4_1);
-
-    which = vtbl1_u8(bt, index);
-    which16x8 = vmovl_u8(which);
-    which16x4_1 = vget_low_u16(which16x8);
-    which32x4_1 = vmovl_u16(which16x4_1);
-    which32x4_1 = vmulq_n_u32(which32x4_1, 0xFFFFFFFF);
-    const float32x4_t bt_whichF32x4_1 = vreinterpretq_f32_u32(which32x4_1);
-
-    const float32x4_t kOne = vdupq_n_f32(1.f);
-
-    const s32 kNumElementsProcessedPerLoop = 8;
-#endif
-
-    for(u32 r = 0; r < numRows; r++)
+    for(u32 r = 0; r < numRows / 5; r++)
     {
       const u8* row = reinterpret_cast<u8*>(GetRow(r));
       u16* out = reinterpret_cast<u16*>(output.GetRow(r));
 
       s32 c = 0;
-
-#ifdef __ARM_NEON__
-      for(; c < numCols - (kNumElementsProcessedPerLoop - 1); c += kNumElementsProcessedPerLoop)
-      {
-        uint8x8_t hsv255 = vld1_u8(row);
-        row += kNumElementsProcessedPerLoop;
-
-        // Expand V to float and convert from 0-255 to 0-1
-        uint16x8_t which16x8 = vmovl_u8(hsv255);
-        uint16x4_t which16x4_1 = vget_low_u16(which16x8);
-        uint16x4_t which16x4_2 = vget_high_u16(which16x8);
-        uint32x4_t which32x4_1 = vmovl_u16(which16x4_1);
-        uint32x4_t which32x4_2 = vmovl_u16(which16x4_2);
-        float32x4_t whichF32x4_1 = vcvtq_f32_u32(which32x4_1);
-        float32x4_t whichF32x4_2 = vcvtq_f32_u32(which32x4_2);
-        hsv1.val[2] = vmulq_n_f32(whichF32x4_1, 1/255.f);
-        hsv2.val[2] = vmulq_n_f32(whichF32x4_2, 1/255.f);
-
-        // p = V * ( 1 - S )
-        float32x4_t p1 = vsubq_f32(kOne, hsv1.val[1]);
-        p1 = vmulq_f32(p1, hsv1.val[2]);
-        float32x4_t p2 = vsubq_f32(kOne, hsv2.val[1]);
-        p2 = vmulq_f32(p2, hsv2.val[2]);
-
-        // q = V * ( 1 - (S * f) )
-        float32x4_t q1 = vmulq_f32(hsv1.val[1], f1);
-        q1 = vsubq_f32(kOne, q1);
-        q1 = vmulq_f32(q1, hsv1.val[2]);
-        float32x4_t q2 = vmulq_f32(hsv2.val[1], f1);
-        q2 = vsubq_f32(kOne, q2);
-        q2 = vmulq_f32(q2, hsv2.val[2]);
-
-        // t = V * ( 1 - (S * ( 1 - f ) ) )
-        float32x4_t t1 = vsubq_f32(kOne, f1);
-        t1 = vmulq_f32(t1, hsv1.val[1]);
-        t1 = vsubq_f32(kOne, t1);
-        t1 = vmulq_f32(t1, hsv1.val[2]);
-        float32x4_t t2 = vsubq_f32(kOne, f1);
-        t2 = vmulq_f32(t2, hsv2.val[1]);
-        t2 = vsubq_f32(kOne, t2);
-        t2 = vmulq_f32(t2, hsv2.val[2]);
-
-
-        // The following block is repeated 3 times one for each color channel
-
-        // Depending on which of the 6 sectors hue falls in r,g,b may either be set
-        // from V, p, q, or t. index holds which sector each pixel's hue is in and is used
-        // to index into the tables held by rp,rq,rt gp,gq,gt and bp,bq,bt. The result of
-        // the look up will either be all 0s or all 1s. If all 1s, then for this sector the
-        // variable corresponding to the table should be used for this channel.
-        // Ex: HSV = (0, 1, 1) which is sector 0 so r = V, g = t, b = p
-        // rp[0] == 0s, rq[0] == 0s, rt[0] == 0s  r is set from V
-        // gp[0] == 0s, gq[0] == 0s, gt[0] == 1s  g is set from t
-        // bp[0] == 1s, bq[0] == 0s, bt[0] == 0s  b is set from p
-
-        // Initialize to V
-        float32x4_t r1 = hsv1.val[2];
-        float32x4_t r2 = hsv2.val[2];
-
-        // If r should be set from p then whichF32x4 will be 1s which will
-        // select values from p instead of r
-        r1 = vbslq_f32(rp_whichF32x4_1, p1, r1);
-        r2 = vbslq_f32(rp_whichF32x4_1, p2, r2);
-
-        // If r should be set from q then whichF32x4 will be 1s which will
-        // select values from q instead of r
-        r1 = vbslq_f32(rq_whichF32x4_1, q1, r1);
-        r2 = vbslq_f32(rq_whichF32x4_1, q2, r2);
-
-        // If r should be set from t then whichF32x4 will be 1s which will
-        // select values from t instead of r
-        r1 = vbslq_f32(rt_whichF32x4_1, t1, r1);
-        r2 = vbslq_f32(rt_whichF32x4_1, t2, r2);
-
-        // Repeat for green
-
-        float32x4_t g1 = hsv1.val[2];
-        float32x4_t g2 = hsv2.val[2];
-
-        g1 = vbslq_f32(gp_whichF32x4_1, p1, g1);
-        g2 = vbslq_f32(gp_whichF32x4_1, p2, g2);
-
-        g1 = vbslq_f32(gq_whichF32x4_1, q1, g1);
-        g2 = vbslq_f32(gq_whichF32x4_1, q2, g2);
-
-        g1 = vbslq_f32(gt_whichF32x4_1, t1, g1);
-        g2 = vbslq_f32(gt_whichF32x4_1, t2, g2);
-
-        // Repeat for blue
-
-        float32x4_t b1 = hsv1.val[2];
-        float32x4_t b2 = hsv2.val[2];
-
-        b1 = vbslq_f32(bp_whichF32x4_1, p1, b1);
-        b2 = vbslq_f32(bp_whichF32x4_1, p2, b2);
-
-        b1 = vbslq_f32(bq_whichF32x4_1, q1, b1);
-        b2 = vbslq_f32(bq_whichF32x4_1, q2, b2);
-
-        b1 = vbslq_f32(bt_whichF32x4_1, t1, b1);
-        b2 = vbslq_f32(bt_whichF32x4_1, t2, b2);
-
-        // Convert from 0-1 to 0-255
-        r1 = vmulq_n_f32(r1, 255.f);
-        g1 = vmulq_n_f32(g1, 255.f);
-        b1 = vmulq_n_f32(b1, 255.f);
-        r2 = vmulq_n_f32(r2, 255.f);
-        g2 = vmulq_n_f32(g2, 255.f);
-        b2 = vmulq_n_f32(b2, 255.f);
-
-        // Convert from f32x4 r,g,b to 16x8 rgb565
-        uint32x4_t color32x4_1 = vcvtq_u32_f32(r1);
-        uint16x4_t color16x4_1 = vqmovn_u32(color32x4_1);
-        uint32x4_t color32x4_2= vcvtq_u32_f32(r2);
-        uint16x4_t color16x4_2 = vqmovn_u32(color32x4_2);
-        uint16x8_t colorR16x8 = vcombine_u16(color16x4_1, color16x4_2);
-        // Shift red bits into top half of a u16
-        colorR16x8 = vshlq_n_u16(colorR16x8, 8);
-
-        color32x4_1 = vcvtq_u32_f32(g1);
-        color16x4_1 = vqmovn_u32(color32x4_1);
-        color32x4_2 = vcvtq_u32_f32(g2);
-        color16x4_2 = vqmovn_u32(color32x4_2);
-        uint16x8_t colorG16x8 = vcombine_u16(color16x4_1, color16x4_2);
-        // Shift green bits into top half of u16
-        colorG16x8 = vshlq_n_u16(colorG16x8, 8);
-
-        // Shift green bits by 5 and insert into red vector this is the RG56 of RGB565
-        uint16x8_t colorRG = vsriq_n_u16(colorR16x8, colorG16x8, 5);
-
-        color32x4_1 = vcvtq_u32_f32(b1);
-        color16x4_1 = vqmovn_u32(color32x4_1);
-        color32x4_2 = vcvtq_u32_f32(b2);
-        color16x4_2 = vqmovn_u32(color32x4_2);
-        uint16x8_t colorB16x8 = vcombine_u16(color16x4_1, color16x4_2);
-        // Shift blue bits into top half of a u16
-        colorB16x8 = vshlq_n_u16(colorB16x8, 8);
-
-        // Shift blue bits right by 11 and insert into red/green vector
-        uint16x8_t rgb565 = vsriq_n_u16(colorRG, colorB16x8, 11);
-
-        // Write into output
-        vst1q_u16(out, rgb565);
-        out += kNumElementsProcessedPerLoop;
-      }
-#endif
 
       for(; c < numCols; c++)
       {
@@ -1258,6 +1016,138 @@ namespace Vision {
         u16 b = SATURATE_CAST(vpqt[sector_data[i][0]] * 255);
         u16 g = SATURATE_CAST(vpqt[sector_data[i][1]] * 255);
         u16 r = SATURATE_CAST(vpqt[sector_data[i][2]] * 255);
+
+        *out = (r << 8 & 0xF800) |
+               (g << 3 & 0x07E0) |
+               (b >> 3);
+
+        ++row;
+        ++out;
+      }
+    }
+    for(u32 r = numRows / 5; r < numRows / 5 * 2; r++)
+    {
+      const u8* row = reinterpret_cast<u8*>(GetRow(r));
+      u16* out = reinterpret_cast<u16*>(output.GetRow(r));
+
+      s32 c = 0;
+
+      for(; c < numCols; c++)
+      {
+        f32 v = (*row) * (1.f/255.f);
+
+        static const int sector_data[][3]= {{1,3,0}, {1,0,2},
+                                            {3,0,1}, {0,2,1},
+                                            {0,1,3}, {2,1,0}};
+
+        float vpqt[4];
+        vpqt[0] = v;
+        vpqt[1] = v * (1.f - s2);
+        vpqt[2] = v * (1.f - (s2 * dh2));
+        vpqt[3] = v * (1.f - (s2 * (1.f - dh2)));
+
+        u16 b = SATURATE_CAST(vpqt[sector_data[i2][0]] * 255);
+        u16 g = SATURATE_CAST(vpqt[sector_data[i2][1]] * 255);
+        u16 r = SATURATE_CAST(vpqt[sector_data[i2][2]] * 255);
+
+        *out = (r << 8 & 0xF800) |
+               (g << 3 & 0x07E0) |
+               (b >> 3);
+
+        ++row;
+        ++out;
+      }
+    }
+    for(u32 r = numRows / 5 * 2; r < numRows / 5 * 3; r++)
+    {
+      const u8* row = reinterpret_cast<u8*>(GetRow(r));
+      u16* out = reinterpret_cast<u16*>(output.GetRow(r));
+
+      s32 c = 0;
+
+      for(; c < numCols; c++)
+      {
+        f32 v = (*row) * (1.f/255.f);
+
+        static const int sector_data[][3]= {{1,3,0}, {1,0,2},
+                                            {3,0,1}, {0,2,1},
+                                            {0,1,3}, {2,1,0}};
+
+        float vpqt[4];
+        vpqt[0] = v;
+        vpqt[1] = v * (1.f - s3);
+        vpqt[2] = v * (1.f - (s3 * dh3));
+        vpqt[3] = v * (1.f - (s3 * (1.f - dh3)));
+
+        u16 b = SATURATE_CAST(vpqt[sector_data[i3][0]] * 255);
+        u16 g = SATURATE_CAST(vpqt[sector_data[i3][1]] * 255);
+        u16 r = SATURATE_CAST(vpqt[sector_data[i3][2]] * 255);
+
+        *out = (r << 8 & 0xF800) |
+               (g << 3 & 0x07E0) |
+               (b >> 3);
+
+        ++row;
+        ++out;
+      }
+    }
+    for(u32 r = numRows / 5 * 3; r < numRows / 5 * 4; r++)
+    {
+      const u8* row = reinterpret_cast<u8*>(GetRow(r));
+      u16* out = reinterpret_cast<u16*>(output.GetRow(r));
+
+      s32 c = 0;
+
+      for(; c < numCols; c++)
+      {
+        f32 v = (*row) * (1.f/255.f);
+
+        static const int sector_data[][3]= {{1,3,0}, {1,0,2},
+                                            {3,0,1}, {0,2,1},
+                                            {0,1,3}, {2,1,0}};
+
+        float vpqt[4];
+        vpqt[0] = v;
+        vpqt[1] = v * (1.f - s4);
+        vpqt[2] = v * (1.f - (s4 * dh4));
+        vpqt[3] = v * (1.f - (s4 * (1.f - dh4)));
+
+        u16 b = SATURATE_CAST(vpqt[sector_data[i4][0]] * 255);
+        u16 g = SATURATE_CAST(vpqt[sector_data[i4][1]] * 255);
+        u16 r = SATURATE_CAST(vpqt[sector_data[i4][2]] * 255);
+
+        *out = (r << 8 & 0xF800) |
+               (g << 3 & 0x07E0) |
+               (b >> 3);
+
+        ++row;
+        ++out;
+      }
+    }
+    for(u32 r = numRows / 5 * 4; r < numRows; r++)
+    {
+      const u8* row = reinterpret_cast<u8*>(GetRow(r));
+      u16* out = reinterpret_cast<u16*>(output.GetRow(r));
+
+      s32 c = 0;
+
+      for(; c < numCols; c++)
+      {
+        f32 v = (*row) * (1.f/255.f);
+
+        static const int sector_data[][3]= {{1,3,0}, {1,0,2},
+                                            {3,0,1}, {0,2,1},
+                                            {0,1,3}, {2,1,0}};
+
+        float vpqt[4];
+        vpqt[0] = v;
+        vpqt[1] = v * (1.f - s5);
+        vpqt[2] = v * (1.f - (s5 * dh5));
+        vpqt[3] = v * (1.f - (s5 * (1.f - dh5)));
+
+        u16 b = SATURATE_CAST(vpqt[sector_data[i5][0]] * 255);
+        u16 g = SATURATE_CAST(vpqt[sector_data[i5][1]] * 255);
+        u16 r = SATURATE_CAST(vpqt[sector_data[i5][2]] * 255);
 
         *out = (r << 8 & 0xF800) |
                (g << 3 & 0x07E0) |
