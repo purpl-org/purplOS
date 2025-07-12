@@ -1471,7 +1471,7 @@ void FaceInfoScreenManager::DrawSensorInfo(const RobotState& state)
 void FaceInfoScreenManager::DrawBuildInfo() {
   auto *osstate = OSState::getInstance();
   const std::string osProject = "OS: " + OSProject;
-  const std::string branch = "BRANCH: " + OSBranch;
+  const std::string branch = "BRANCH: " + osstate->GetBuildBranch();
   const std::string osVer = "VER: " + osstate->GetOSBuildVersion();
   const std::string sha = "SHA: " + osstate->GetBuildSha();
   const std::string creator = Creator;

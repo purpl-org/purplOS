@@ -6,7 +6,7 @@ Check the [wiki](https://github.com/kercre123/victor/wiki) for more information 
 
 ## Building (Linux)
 
- - Prereqs: Make sure you have `docker` and `git-lfs` installed.
+ - Prereqs: Make sure you have `docker` and `git` installed.
 
 1. Clone the repo and cd into it:
 
@@ -39,47 +39,23 @@ cd ~/purplOS
 # only works on M1-M4 Macs at the moment, not Intel
 
  - Prereqs: Make sure you have [brew](https://brew.sh/) installed.
-   -  Then: `brew install pyenv git-lfs ccache wget go upx`
+   -  Then: `brew install ccache wget upx`
 
 1. Clone the repo and cd into it:
 
 ```
-cd ~
+cd ~ (it can go anywhere, your home directory is a nice spot though)
 git clone --recurse-submodules https://github.com/purpl-org/purplOS 
 cd purplOS
 ```
 
-2. Set up Python 2:
-
-```
-pyenv install 2.7.18
-pyenv init
-```
-
-- Add the following to both ~/.zshrc and ~/.zprofile. After doing so, run the commands in your terminal session:
-```
-export PYENV_ROOT="$HOME/.pyenv"
-[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init -)"
-pyenv shell 2.7.18
-```
-
-3. Disable security:
-
-```
-sudo spctl --master-disable
-sudo spctl --global-disable
-```
-- You will have to head to `System Settings -> Security & Privacy -> Allow applications from` and select "Anywhere".
-
-
-4. Run the build script:
+2. Run the build script:
 ```
 cd ~/purplOS
 ./build/build-v.sh
 ```
 
-5. It should just work! The output will be in `./_build/vicos/Release/`
+3. It should just work! The output will be in `./_build/vicos/Release/`
 
 ## Deploying
 
