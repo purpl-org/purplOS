@@ -64,13 +64,10 @@ if (VICOS)
     libopencv_core.so.412
     libopencv_features2d.so.412
     libopencv_flann.so.412
-    libopencv_highgui.so.412
     libopencv_imgcodecs.so.412
     libopencv_imgproc.so.412
     libopencv_ml.so.412
     libopencv_objdetect.so.412
-    libopencv_video.so.412
-    libopencv_videoio.so.412
     ${AVS_LIB_NAMES}
   )
   foreach (target ${STRIP_TARGETS})
