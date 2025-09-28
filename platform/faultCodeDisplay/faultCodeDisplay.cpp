@@ -26,15 +26,18 @@ namespace Anki { namespace Vector {
 static const std::unordered_map<uint16_t,std::string> kFaultText = {
   {898,  "Body communication timeout (898)."},
   {899,  "Body communication failure (899)."},
-  {917,  "vic-robot crashed. Vector will restart."},
-  {916,  "vic-robot crashed. Vector will restart."},
-  {915,  "vic-engine crashed. Vector will restart."},
-  {914,  "vic-engine crashed. Vector will restart."},
-  {980,  "Camera issue. Reboot the robot if this persists."},
+  {917,  "vic-robot crashed."},
+  {916,  "vic-robot crashed."},
+  {915,  "vic-engine crashed."},
+  {914,  "vic-engine crashed."},
+  {980,  "Camera issue (980)."},
+  {981,  "Camera process issue (981)."},
 };
+
 
 static const char* kSupportURL        = "error.p-2.xyz";
 static const char* kVectorWillRestart = "vector will restart";
+
 
 static constexpr float kHeadScale = 0.7f;
 static constexpr int   kHeadThick = 1;
@@ -55,8 +58,17 @@ static int DrawHeading(Vision::ImageRGB& img, int baselineY)
 }
 
 
-static void DrawMultiline(const std::string& txt)
+static void DrawMultiline(uint16_t code, std::string txt, bool willRestart)
 {
+  if (willRestart) {
+    txt = txt + " Vector will restart.";
+  } else {
+    if (code == 980 || code == 981) {
+      txt = txt + " Robot reboot recommended.";
+    } else {
+      txt = txt + " Restarts exhausted.";
+    }
+  }
   static Vision::ImageRGB img(FACE_DISPLAY_HEIGHT, FACE_DISPLAY_WIDTH);
   img.FillWith(0);
 
@@ -162,7 +174,7 @@ int main(int argc,char*argv[])
 
   lcd_init();
   auto it=kFaultText.find(code);
-  if(it!=kFaultText.end()) DrawMultiline(it->second);
+  if(it!=kFaultText.end()) DrawMultiline(code, it->second, willRestart);
   else                     DrawNumber(code,willRestart);
   return 0;
 }
