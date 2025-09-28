@@ -1,26 +1,18 @@
-# WireOS - /anki folder
+# purplOS - /anki folder
 
-**This is where the personality code for WireOS exists.**
+**This is where the personality code for purplOS exists.**
 
-For the entire OS, check out the [wire-os](https://github.com/os-vector/wire-os) repo. This repo, `wire-os-victor`, is a submodule of that, and just builds the /anki folder which goes into that OS. However, `wire-os-victor` can still be built standalone and deployed to a robot which is running a good base OTA. This is recommended for developers.
+For the entire OS, check out the [purplOS-oelinux](https://github.com/purpl-org/purplOS-oelinux) repo. This repo, `purplOS`, is a submodule of that, and just builds the /anki folder which goes into that OS. However, `purplOS` can still be built standalone and deployed to a robot which is running a good base OTA. This is recommended for developers.
 
 Most changes happen in this repo. If one wants to, for instance, add a new feature; this is where they'd do it.
 
-If you want to add a program to the OS, do that in [wire-os](https://github.com/os-vector/wire-os).
+If you want to add a program to the OS, do that in [purplOS-oelinux](https://github.com/purpl-org/purplOS-oelinux).
 
 Check [vector-docs](https://os-vector.github.io/vector-docs) for more information about the source code leak, what we can do with this, and general Vector info.
 
-## What is WireOS?
-
-WireOS serves as a stable, up-to-date, easily-buildable base for CFW, and is a continuation of Anki's work.
-
-Any feature added here should be somewhat objectively applicable to other CFW. Feel free to make a PR. Wire encourages PRs which add things like 3rd-party library upgrades, new behaviors which Anki might have planned to add, code documentation, and optimizations. Wire discourages PRs which significantly alter the experience, like transforming him into a (soulless) GPT box or making him into Cozmo. If you want to do something like that, make your own CFW (instructions in [vector-docs](https://os-vector.github.io/vector-docs)).
-
 ## Building
 
-`wire-os-victor` can be built standalone on most Linux distros (arm64 or amd64).
-
-macOS building used to work, but **doesn't at the moment**. This will be fixed soon. Disregard the macOS instructions for now.
+`purplOS` can be built standalone on most Linux distros (arm64 or amd64), and on macOS (arm64 only, for now).
 
 Docker is recommended for now (especially if you have a weird or old Linux distro installed), though bare metal works nicely too.
 
@@ -38,8 +30,8 @@ Click an option below for instructions.
 
 ```
 cd ~
-git clone --recurse-submodules https://github.com/os-vector/wire-os-victor
-cd wire-os-victor
+git clone --recurse-submodules https://github.com/purpl-org/purplOS
+cd purplOS
 ```
 
 2. Make sure you can run Docker as a normal user. This will probably involve:
@@ -54,7 +46,7 @@ sudo chmod 660 /var/run/docker.sock
 
 3. Run the build script:
 ```
-cd ~/wire-os-victor
+cd ~/purplOS
 ./build/build-v.sh
 ```
 
@@ -65,7 +57,7 @@ cd ~/wire-os-victor
 <br \>
 
 - Prerequisites:
-  - glibc 2.35 or above - this means anything Debian Bookworm-era and newer will work.
+  - glibc 2.27 or above - this means anything Ubuntu 18.04 and newer will work.
   - The following packages need to be installed: `git wget curl openssl ninja g++ gcc pkg-config ccache`
 ```
 # Arch Linux:
@@ -80,8 +72,8 @@ sudo dnf install -y git wget curl openssl ninja-build gcc gcc-c++ pkgconf-pkg-co
 
 ```
 cd ~
-git clone --recurse-submodules https://github.com/os-vector/wire-os-victor
-cd wire-os-victor
+git clone --recurse-submodules https://github.com/purpl-org/purplOS
+cd purplOS
 ```
 
 2. Source `setenv.sh`:
@@ -106,8 +98,6 @@ vbuild
 <summary><strong>macOS (M-series only)</strong></summary>
 <br />
 
-# macOS BUILDING IS NOT WORKING AT THE MOMENT. THIS WILL BE FIXED SOON.
-
 - Prereqs: Make sure you have [brew](https://brew.sh/) installed.
   -  Then: `brew install ccache wget upx ninja`
 
@@ -115,13 +105,13 @@ vbuild
 
 ```
 cd ~
-git clone --recurse-submodules https://github.com/os-vector/wire-os-victor
+git clone --recurse-submodules https://github.com/purpl-org/purplOS
 cd victor
 ```
 
 2. Run the build script:
 ```
-cd ~/wire-os-victor
+cd ~/purplOS
 ./build/build-v.sh
 ```
 
@@ -129,7 +119,7 @@ cd ~/wire-os-victor
 
 ## Deploying
 
-1. Install WireOS on your robot.
+1. Install purplOS on your robot.
 2. Get your robot's IP through CCIS:
   - 1. Place your robot on the charger
   - 2. Double click the button
@@ -190,9 +180,11 @@ vclean
 ```
 </details>
 
+
 ## VSCode Code Completion
 
 - After you build for the first time, two files will be generated and placed in the root of the source directory:
   - `compile_commands.json`
   - `.clangd`
 - If you install the [`clangd`](https://marketplace.visualstudio.com/items?itemName=llvm-vs-code-extensions.vscode-clangd) extension for VSCode then relaunch VSCode after a build, it will index the code and you will have speedy code completion, error underlining+explanations, function descriptions, and such for the entire codebase.
+

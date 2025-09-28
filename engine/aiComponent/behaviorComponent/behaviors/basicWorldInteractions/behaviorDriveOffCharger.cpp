@@ -52,7 +52,7 @@ const AnimationTrigger kAnimLeft = AnimationTrigger::DriveOffChargerLeft;
 const AnimationTrigger kAnimRight = AnimationTrigger::DriveOffChargerRight;
 const AnimationTrigger kAnimStraight = AnimationTrigger::DriveOffChargerStraight;
 const BehaviorID kRandomDriveBehavior = BEHAVIOR_ID(DriveOffChargerRandomlyAnim);
-const int kMaxAttempts = 10;
+const int kMaxAttempts = 3;
 const float kFaceAngleForTurn_rad = DEG_TO_RAD(60.0f);
 }
   
