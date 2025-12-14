@@ -12,9 +12,9 @@ Check [vector-docs](https://os-vector.github.io/vector-docs) for more informatio
 
 ## Building
 
-`purplOS` can be built standalone on most Linux distros (arm64 or amd64), and on macOS (arm64 only, for now).
+`purplOS` can be built standalone on most Linux distros (arm64 or amd64) and on macOS (arm64/M-series).
 
-Docker is recommended for now (especially if you have a weird or old Linux distro installed), though bare metal works nicely too.
+For Linux, the Docker method is recommended for now (especially if you have a weird or old Linux distro installed), though bare metal works nicely too.
 
 Note that if you have built in Docker before and want to build on bare metal now (or vice-versa), you should do a [clean](#cleaning) build.
 
@@ -99,7 +99,7 @@ vbuild
 <br />
 
 - Prereqs: Make sure you have [brew](https://brew.sh/) installed.
-  -  Then: `brew install ccache wget upx ninja`
+  -  Then: `brew install ccache wget upx ninja pkg-config`
 
 1. Clone the repo and cd into it:
 
@@ -131,8 +131,6 @@ cd ~/purplOS
 <details>
 <summary><strong>(Docker: x86_64 or arm64 Linux) or (macOS M-series)</strong></summary>
 <br \>
-
-# macOS BUILDING IS NOT WORKING AT THE MOMENT. THIS WILL BE FIXED SOON.
 
 - Run:
 
