@@ -485,7 +485,7 @@ void BackpackLightComponent::UpdateSystemLightState(bool isCloudStreamOpen)
         // Pulsing cyan
         // purple
         light.onColor = 80008000;
-        light.offColor = 0x00FFFF00;
+        light.offColor = 80008000;
         light.onPeriod_ms = 960;
         light.offPeriod_ms = 960;
         light.transitionOnPeriod_ms = 0;
