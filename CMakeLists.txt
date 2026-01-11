@@ -14,7 +14,7 @@ list(APPEND CMAKE_MODULE_PATH
 project(victor)
 
 # Build options
-option(USE_DAS "Enable DAS reporting" ON)
+option(USE_DAS "Enable DAS reporting" OFF)
 
 # Use ccache if it is installed
 include(ccache)
