@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.10)
 project(webServerProcess)
 
 # Build options
-option(USE_DAS "Enable DAS reporting" OFF)
+option(USE_DAS "Enable DAS reporting" ON)
 
 include(anki_build_cxx)
 

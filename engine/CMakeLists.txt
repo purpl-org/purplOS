@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.10)
 project(engine)
 
 # Build options
-option(USE_DAS "Enable DAS reporting" OFF)
+option(USE_DAS "Enable DAS reporting" ON)
 option(ALEXA_ACOUSTIC_TEST "Enable alexa acoustic testing (no movement mode)" OFF)
 
 include(opencv)
