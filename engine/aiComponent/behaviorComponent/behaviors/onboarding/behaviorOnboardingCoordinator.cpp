@@ -110,6 +110,7 @@ BehaviorOnboardingCoordinator::DynamicVariables::DynamicVariables()
 , appDisconnectExitTime_s(0.0f)
 , markCompleteAndExitOnNextUpdate(false)
 , skipOnboardingOnNextUpdate(false)
+, shouldExitAfterWakeUp(false)
 , emulate1p0Onboarding(false)
 , started1p0WakeUp(false)
 , onboardingStarted(false)
@@ -334,7 +335,8 @@ void BehaviorOnboardingCoordinator::HandleOnboardingMessageFromApp(const AppToEn
     }
     case AppToEngineTag::kOnboardingMarkCompleteAndExit:
     {
-      _dVars.markCompleteAndExitOnNextUpdate = true;
+      _dVars.pendingPhase = OnboardingPhase::WakeUp;
+      _dVars.shouldExitAfterWakeUp = true;
       break;
     }
     case AppToEngineTag::kAppDisconnected:
@@ -529,6 +531,12 @@ void BehaviorOnboardingCoordinator::OnPhaseComplete(const OnboardingPhase& phase
   LOG_INFO("BehaviorOnboardingCoordinator.OnPhaseComplete",
            "Completed onboarding phase %s. Idling.",
            EnumToString(phase));
+
+  if (_dVars.shouldExitAfterWakeUp && OnboardingPhase::WakeUp == phase) {
+      _dVars.markCompleteAndExitOnNextUpdate = true;
+      _dVars.shouldExitAfterWakeUp = false;
+      return; 
+  }
 
   if( _dVars.emulate1p0Onboarding ){
     if( OnboardingPhase::WakeUp == phase ){
