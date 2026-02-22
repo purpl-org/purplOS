@@ -2,7 +2,7 @@
     "jdocs": "api.skittl.net:8081",
     "tms": "api.skittl.net:8081",
     "chipper": "api.skittl.net:8081",
-    "check": "api.skittl.net:8081/ok",
+    "check": "api.skittl.net/ok",
     "logfiles": "s3://anki-device-logs-prod/victor",
     "appkey": "oDoa0quieSeir6goowai7f"
 }
