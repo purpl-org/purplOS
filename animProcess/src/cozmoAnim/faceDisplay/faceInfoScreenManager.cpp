@@ -66,10 +66,9 @@
 #endif
 
 // CHANGE THIS TO BE YOUR PROJECT'S STUFF
-const std::string OSProject = "purplOS";
-const std::string OSBranch = "main";
-const std::string Creator = "By froggitti";
-const std::string CreatorWebsite = "froggitti.net";
+const std::string OSProject = "WireOS";
+const std::string Creator = "By Wire/kercre123";
+const std::string CreatorWebsite = "kerigan.dev";
 
 // Log options
 #define LOG_CHANNEL    "FaceInfoScreenManager"
@@ -77,7 +76,7 @@ const std::string CreatorWebsite = "froggitti.net";
 // Forces transition to BLE pairing screen on double button press
 // without waiting for actual START_PAIRING message from switchboard.
 // Mainly useful in sim, where there is currently no switchboard.
-#ifdef SIMULATOR
+#if defined(SIMULATOR) || defined(STANDALONE_SIM)
 #define FORCE_TRANSITION_TO_PAIRING 1
 #else
 #define FORCE_TRANSITION_TO_PAIRING 0
@@ -223,9 +222,9 @@ void FaceInfoScreenManager::Init(Anim::AnimContext* context, Anim::AnimationStre
   ADD_SCREEN(FAC, None);
   ADD_SCREEN(CustomText, None);
   ADD_SCREEN(Main, Network);
-  ADD_SCREEN_WITH_TEXT(ClearUserData, Main, {"CLEAR USER DATA?"});
-  ADD_SCREEN_WITH_TEXT(ClearUserDataFail, Main, {"UNABLE TO RESET"});
-  ADD_SCREEN_WITH_TEXT(Rebooting, Rebooting, {"REBOOTING..."});
+  ADD_SCREEN_WITH_TEXT(ClearUserData, Main, {"CLEAR OUT SOUL?"});
+  ADD_SCREEN_WITH_TEXT(ClearUserDataFail, Main, {"UNABLE TO CLEAR SOUL"});
+  ADD_SCREEN_WITH_TEXT(Rebooting, Rebooting, {"Vector will remember that..."});
   ADD_SCREEN_WITH_TEXT(SelfTest, Main, {"START SELF TEST?"});
   ADD_SCREEN(SelfTestRunning, SelfTestRunning)
   ADD_SCREEN(Network, SensorInfo);
@@ -318,7 +317,7 @@ void FaceInfoScreenManager::Init(Anim::AnimContext* context, Anim::AnimationStre
 #if ENABLE_SELF_TEST
   ADD_MENU_ITEM(Main, IsXray() ? "TEST" : "SELF TEST", SelfTest);
 #endif
-  ADD_MENU_ITEM(Main, IsXray() ? "RESET" : "CLEAR USER DATA", ClearUserData);
+  ADD_MENU_ITEM(Main, IsXray() ? "CLEAR" : "CLEAR OUT SOUL", ClearUserData);
 
   // === Self test screen ===
   ADD_MENU_ITEM(SelfTest, "EXIT", Main);
@@ -765,9 +764,9 @@ void FaceInfoScreenManager::DrawConfidenceClock(
   drawImg.FillWith( {clearColor.r(), clearColor.g(), clearColor.b()} );
 
   const Point2i center_px = { FACE_DISPLAY_WIDTH / 2, FACE_DISPLAY_HEIGHT / 2 };
-  constexpr int circleRadius_px = 40;
+  int circleRadius_px = IsXray() ? 32 : 40;
   constexpr int innerRadius_px = 5;
-  constexpr int maxBarLen_px = circleRadius_px - innerRadius_px - 4;
+  int maxBarLen_px = circleRadius_px - innerRadius_px - 4;
   constexpr int barWidth_px = 3;
   constexpr float angleFactorA = 0.866f; // cos(30 degrees)
   constexpr float angleFactorB = 0.5f; // sin(30 degrees)
@@ -1060,6 +1059,9 @@ void FaceInfoScreenManager::ProcessMenuNavigation(const RobotState& state)
       LOG_WARNING("FaceInfoScreenManager.ProcessMenuNavigation.ForcedPairing",
                   "Remove FORCE_TRANSITION_TO_PAIRING when switchboard is working");
       SetScreen(ScreenName::Pairing);
+      SwitchboardInterface::SetConnectionStatus connMsg;
+      connMsg.status = SwitchboardInterface::ConnectionStatus::SHOW_PRE_PIN;
+      UpdateConnectionFlow(std::move(connMsg), _animationStreamer, _context);
     }
   }
   else if(doublePressDetected &&
@@ -1291,6 +1293,13 @@ void FaceInfoScreenManager::DrawMain()
     }
     esn =  serialNum;
   }
+
+  std::transform(esn.begin(), esn.end(), esn.begin(),
+    [](unsigned char c){ return std::tolower(c); });
+
+  #ifdef STANDALONE_SIM
+    esn = "SIMULATE";
+  #endif
 
   const std::string serialNo = "ESN: "  + esn;
 
