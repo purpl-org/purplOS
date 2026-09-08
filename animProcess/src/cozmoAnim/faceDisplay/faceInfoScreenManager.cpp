@@ -66,9 +66,9 @@
 #endif
 
 // CHANGE THIS TO BE YOUR PROJECT'S STUFF
-const std::string OSProject = "WireOS";
-const std::string Creator = "By Wire/kercre123";
-const std::string CreatorWebsite = "kerigan.dev";
+const std::string OSProject = "purplOS";
+const std::string Creator = "By skittle/froggitti";
+const std::string CreatorWebsite = "skittle.dev";
 
 // Log options
 #define LOG_CHANNEL    "FaceInfoScreenManager"
