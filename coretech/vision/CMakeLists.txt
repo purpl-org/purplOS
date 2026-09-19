@@ -4,7 +4,6 @@ project(cti_vision)
 
 set(CORETECH_VISION_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../..)
 
-include(okao)
 include(tflite)
 
 include(anki_build_cxx)
@@ -35,7 +34,6 @@ target_link_libraries(cti_vision
   robot_interface  # for emrHelper.h
   ${TFLITE_LIBS}
   ${OPENCV_LIBS}
-  ${OKAO_LIBS}
   ${ASAN_LINKER_FLAGS}
 )
 
@@ -65,7 +63,6 @@ target_compile_definitions(cti_vision
   FACE_TRACKER_FACIOMETRIC=0
   FACE_TRACKER_FACESDK=1
   FACE_TRACKER_OPENCV=2
-  FACE_TRACKER_OKAO=3
   FACE_TRACKER_TEST=4
   FACE_TRACKER_YUNET=5
   FACE_TRACKER_PROVIDER=FACE_TRACKER_YUNET
