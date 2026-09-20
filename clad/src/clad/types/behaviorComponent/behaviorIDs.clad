@@ -489,7 +489,6 @@ enum uint_16 BehaviorID {
   WeatherTextToSpeech,
 
   // victorBehaviorTree
-  PetDetection,
   WireTest,
 }
 
