@@ -29,7 +29,6 @@
 #include "engine/navMap/mapComponent.h"
 #include "engine/externalInterface/gatewayInterface.h"
 #include "engine/faceWorld.h"
-#include "engine/petWorld.h"
 #include "engine/robot.h"
 #include "engine/robotDataLoader.h"
 #include "engine/robotStateHistory.h"
@@ -932,10 +931,6 @@ namespace Vector {
         //  and should be done before sending RobotProcessedImage below!)
         tryAndReport(&VisionComponent::UpdateFaces,                {VisionMode::Faces});
 
-        // NOTE: UpdatePets will also update PetWorld (which broadcasts pet face observations
-        //  and should be done before sending RobotProcessedImage below!)
-        tryAndReport(&VisionComponent::UpdatePets,                 {VisionMode::Pets});
-
         tryAndReport(&VisionComponent::UpdateMotionCentroid,       {VisionMode::Motion});
         tryAndReport(&VisionComponent::UpdateOverheadEdges,        {VisionMode::OverheadEdges});
         tryAndReport(&VisionComponent::UpdateComputedCalibration,  {VisionMode::Calibration});
@@ -1147,12 +1142,6 @@ namespace Vector {
 
     return lastResult;
   } // UpdateFaces()
-
-  Result VisionComponent::UpdatePets(const VisionProcessingResult& procResult)
-  {
-    Result lastResult = _robot->GetPetWorld().Update(procResult.pets);
-    return lastResult;
-  }
 
   Result VisionComponent::UpdateMotionCentroid(const VisionProcessingResult& procResult)
   {
@@ -1959,7 +1948,7 @@ namespace Vector {
   inline static std::string GetFullFaceAlbumPath(const CozmoContext* context, const std::string& pathIn)
   {
     const std::string fullPath = context->GetDataPlatform()->pathToResource(Util::Data::Scope::Persistent,
-                                                                            Util::FileUtils::FullFilePath({"faceAlbums", pathIn}));
+                                                                            Util::FileUtils::FullFilePath({"faceAlbums_v2", pathIn}));
     return fullPath;
   }
 

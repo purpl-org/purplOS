@@ -151,7 +151,6 @@ endif()
 
 set(ANKI_EXTERNAL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/EXTERNALS")
 set(ANKI_THIRD_PARTY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/3rd")
-set(OKAO_VISION_DIR "${CMAKE_CURRENT_SOURCE_DIR}/okaoVision")
 
 set(ANKI_SRCLIST_DIR "${CMAKE_SOURCE_DIR}/generated/cmake")
 
@@ -245,7 +244,6 @@ endif()
 # Recommend moving for leaf CMakeLists.txt to this file
 
 include(opencv)
-include(okao)
 include(flatbuffers)
 include(sodium)
 include(aubio)
